@@ -1,0 +1,58 @@
+/* Champs avec fond blanc (par défaut) */
+input,
+textarea {
+  background-color: #ffffff; /* fond blanc */
+  border: 1px solid #3399ff; /* bordure bleue */
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Style pour les champs invalides (erreur) */
+input:invalid,
+textarea:invalid {
+  border-color: #dc3545; /* rouge */
+  background-color: #fff0f0; /* rouge très clair */
+}
+
+/* Style pour les champs valides : conserver le fond blanc */
+input:valid,
+textarea:valid {
+  border-color: #78a5d0; /* bordure bleu clair */
+  background-color: #ffffff !important; /* garder blanc */
+}
+
+/* Messages personnalisés */
+.message-erreur {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+.message-valid {
+  color: rgb(121, 158, 194);
+  font-size: 0.9em;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+.message {
+  font-size: 0.9em;
+  margin: 5px 0 10px;
+}
+
+.message.error {
+  color: red;
+}
+
+.message.valid {
+  color: rgb(98, 156, 177);
+}
+
+.message-global {
+  margin-top: 10px;
+  font-size: 0.95em;
+  color: rgb(148, 175, 196);
+}
