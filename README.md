@@ -1,6 +1,6 @@
-# 🎭 Plateforme de Divertissement et Loisirs
+#  Plateforme de Divertissement et Loisirs
 
-## 🌐 Description du projet
+##  Description du projet
 
 Dans un monde où le divertissement et les loisirs occupent une place centrale dans notre quotidien, l’accès aux événements reste souvent limité par des contraintes de disponibilité, de réservation et de fiabilité des tickets.
 
@@ -12,7 +12,7 @@ Ce projet vise à repenser l’expérience des spectateurs à travers une **plat
 
 ---
 
-## ⚙️ Fonctionnalités principales
+##  Fonctionnalités principales
 
 🔹 **Forum**  
 - Création de sujets, commentaires et réponses.  
@@ -36,7 +36,7 @@ Ce projet vise à repenser l’expérience des spectateurs à travers une **plat
 
 ---
 
-## 🛠️ Technologies utilisées
+## Technologies utilisées
 
 - **Frontend** : HTML, CSS, JavaScript  
 - **Backend** : PHP  
@@ -45,7 +45,7 @@ Ce projet vise à repenser l’expérience des spectateurs à travers une **plat
 
 ---
 
-## 🧪 Environnement de développement
+##  Environnement de développement
 
 1. Cloner le projet :
    ```bash
