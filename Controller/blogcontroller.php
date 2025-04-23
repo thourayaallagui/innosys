@@ -4,12 +4,18 @@ require __DIR__ . '/../Model/Blog.php';
 
 class BlogController
 {
-    // Récupérer tous les blogs
-    public function listBlogs($order = null)
+    public function listBlogs($order = null, $category = null)
     {
         $sql = "SELECT * FROM blog";
+        $params = [];
     
-        // Si un ordre de tri est défini, ajouter la clause ORDER BY
+        // Si une catégorie est fournie, ajouter une clause WHERE
+        if (!empty($category)) {
+            $sql .= " WHERE categorie LIKE :category";
+            $params[':category'] = '%' . $category . '%';
+        }
+    
+        // Gérer l'ordre de tri par date
         if ($order === 'asc') {
             $sql .= " ORDER BY date_publication ASC";
         } elseif ($order === 'desc') {
@@ -18,12 +24,14 @@ class BlogController
     
         $db = Config::getConnexion();
         try {
-            $list = $db->query($sql);
-            return $list->fetchAll();
+            $stmt = $db->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
         } catch (Exception $e) {
             die('Error: ' . $e->getMessage());
         }
     }
+    
     
 
     // Ajouter un blog

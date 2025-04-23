@@ -7,8 +7,8 @@ require_once __DIR__ . '/../../Controller/BlogController.php';
 
 $blogController = new BlogController();
 $order = isset($_GET['sort']) ? $_GET['sort'] : null;
-
-$list = $blogController->listBlogs($order);
+$category = isset($_GET['category']) ? $_GET['category'] : null;
+$list = $blogController->listBlogs($order, $category);
 ?>
 
 <!DOCTYPE html>
@@ -68,15 +68,70 @@ $list = $blogController->listBlogs($order);
     border-color: #00cfff;
     box-shadow: 0 0 5px rgba(0, 207, 255, 0.5);
   }
+
+  .blog-section {
+  padding: 46px 20px;
+}
+
+.blog-list {
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+}
+
+.blog-card {
+  width: 100%;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid #eee;
+}
+
+
+.blog-card p {
+  margin: 10px 0;
+}
+
+.blog-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.blog-buttons a.btn-primary {
+  background-color: #00cfff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  display: inline-block;
+  text-align: center;
+}
+
+.blog-buttons a.btn-primary:hover {
+  background-color: #009ec3;
+}
+
 </style>
 
 <form method="GET" class="sort-form">
+  <label for="category">Rechercher par catégorie :</label>
+  <input type="text" name="category" id="category" placeholder="Ex: Voyage" value="<?= isset($_GET['category']) ? htmlspecialchars($_GET['category']) : '' ?>">
+  <button type="submit" class="btn-primary">
+    <i class="fas fa-search"></i> <!-- Icône de recherche -->
+  </button>
   <label for="sort">Trier par date :</label>
   <select name="sort" id="sort" onchange="this.form.submit()">
     <option value="">-- Choisir --</option>
     <option value="asc" <?= (isset($_GET['sort']) && $_GET['sort'] == 'asc') ? 'selected' : '' ?>>Date croissante</option>
     <option value="desc" <?= (isset($_GET['sort']) && $_GET['sort'] == 'desc') ? 'selected' : '' ?>>Date décroissante</option>
   </select>
+
 </form>
   <section class="blog-section">
     <div class="container">
