@@ -20,13 +20,11 @@ if (isset($_GET['id_blog']) && !empty($_GET['id_blog'])) {
 
 // Traitement du formulaire
 if (
-    isset($_POST['titre'], $_POST['contenu'], $_POST['nb_vues'], $_POST['nb_likes'], $_POST['date_publication'], $_POST['categorie'])
+    isset($_POST['titre'], $_POST['contenu'], $_POST['date_publication'], $_POST['categorie'])
 ) {
     $updatedBlog = new Blog(
         $_POST['titre'],
         $_POST['contenu'],
-        (int)$_POST['nb_vues'],
-        (int)$_POST['nb_likes'],
         new DateTime($_POST['date_publication']),
         $_POST['categorie']
     );
@@ -129,14 +127,8 @@ if (
             <label for="contenu">Contenu</label>
             <textarea id="contenu" name="contenu" required><?= htmlspecialchars($blog['contenu']); ?></textarea>
 
-            <label for="nb_vues">Nombre de vues</label>
-            <input type="number" id="nb_vues" name="nb_vues" value="<?= (int)$blog['nb_vues']; ?>" required />
-
-            <label for="nb_likes">Nombre de likes</label>
-            <input type="number" id="nb_likes" name="nb_likes" value="<?= (int)$blog['nb_likes']; ?>" required />
-
             <label for="date_publication">Date de publication</label>
-            <input type="date" id="date_publication" name="date_publication" value="<?= htmlspecialchars($blog['date_publication']); ?>" required />
+            <input type="date" id="date_publication" name="date_publication" value="<?= htmlspecialchars($blog['date_publication']); ?>" required min="<?= date(format: 'Y-m-d') ?>" max="<?= date('Y-m-d') ?>"><br><br>
 
             <label for="categorie">Catégorie</label>
             <input type="text" id="categorie" name="categorie" value="<?= htmlspecialchars($blog['categorie']); ?>" required />

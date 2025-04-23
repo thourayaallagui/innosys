@@ -1,13 +1,21 @@
 <?php
-require __DIR__ . '/../config.php';
+require_once __DIR__ . '/../config.php';
 require __DIR__ . '/../Model/Blog.php';
 
 class BlogController
 {
     // Récupérer tous les blogs
-    public function listBlogs()
+    public function listBlogs($order = null)
     {
         $sql = "SELECT * FROM blog";
+    
+        // Si un ordre de tri est défini, ajouter la clause ORDER BY
+        if ($order === 'asc') {
+            $sql .= " ORDER BY date_publication ASC";
+        } elseif ($order === 'desc') {
+            $sql .= " ORDER BY date_publication DESC";
+        }
+    
         $db = Config::getConnexion();
         try {
             $list = $db->query($sql);
@@ -16,12 +24,13 @@ class BlogController
             die('Error: ' . $e->getMessage());
         }
     }
+    
 
     // Ajouter un blog
     public function addBlog($blog)
     {
-        $sql = "INSERT INTO blog (titre, contenu, nb_vues, nb_likes, date_publication, categorie) 
-                VALUES (:titre, :contenu, :nb_vues, :nb_likes, :date_publication, :categorie)";
+        $sql = "INSERT INTO blog (titre, contenu, date_publication, categorie) 
+                VALUES (:titre, :contenu, :date_publication, :categorie)";
 
         $db = Config::getConnexion();
 
@@ -30,8 +39,6 @@ class BlogController
             $query->execute([
                 'titre' => $blog->getTitre(),
                 'contenu' => $blog->getContenu(),
-                'nb_vues' => $blog->getNbVues(),
-                'nb_likes' => $blog->getNbLikes(),
                 'date_publication' => $blog->getDatePublication()->format('Y-m-d'),
                 'categorie' => $blog->getCategorie()
             ]);
@@ -74,16 +81,14 @@ class BlogController
             $db = Config::getConnexion();
             $query = $db->prepare(
                 'UPDATE blog 
-                 SET titre = :titre, contenu = :contenu, nb_vues = :nb_vues, 
-                     nb_likes = :nb_likes, date_publication = :date_publication, categorie = :categorie 
+                 SET titre = :titre, contenu = :contenu, 
+                      date_publication = :date_publication, categorie = :categorie 
                  WHERE id_blog = :id_blog'
             );
             $query->execute([
                 'id_blog' => $id,
                 'titre' => $blog->getTitre(),
                 'contenu' => $blog->getContenu(),
-                'nb_vues' => $blog->getNbVues(),
-                'nb_likes' => $blog->getNbLikes(),
                 'date_publication' => $blog->getDatePublication()->format('Y-m-d'),
                 'categorie' => $blog->getCategorie()
             ]);

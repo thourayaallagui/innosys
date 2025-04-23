@@ -76,8 +76,6 @@ $list = $blogController->listBlogs();
             <tr>
               <th>Titre</th>
               <th>Contenu</th>
-              <th>Nombre de Vues</th>
-              <th>Nombre de Likes</th>
               <th>Date</th>
               <th>Catégorie</th>
               <th>Actions</th>
@@ -88,8 +86,6 @@ $list = $blogController->listBlogs();
               <tr>
                 <td><?= htmlspecialchars($blog['titre']); ?></td>
                 <td><?= htmlspecialchars($blog['contenu']); ?></td>
-                <td><?= htmlspecialchars($blog['nb_vues']); ?></td>
-                <td><?= htmlspecialchars($blog['nb_likes']); ?></td>
                 <td><?= htmlspecialchars($blog['date_publication']); ?></td>
                 <td><?= htmlspecialchars($blog['categorie']); ?></td>
                 <td class="action-icons">

@@ -6,13 +6,11 @@ $blogC = new blogcontroller();
 
 // Traitement du formulaire
 if (
-    isset($_POST['titre'], $_POST['contenu'], $_POST['nb_vues'], $_POST['nb_likes'], $_POST['date_publication'], $_POST['categorie'])
+    isset($_POST['titre'], $_POST['contenu'], $_POST['date_publication'], $_POST['categorie'])
 ) {
     $blog = new Blog(
         $_POST['titre'],
         $_POST['contenu'],
-        intval($_POST['nb_vues']),
-        intval($_POST['nb_likes']),
         new DateTime($_POST['date_publication']),
         $_POST['categorie']
     );
@@ -66,23 +64,16 @@ if (
     <h1>Ajouter un Blog</h1>
     <form action="" method="POST">
         <label for="titre">Titre</label>
-        <input type="text" id="titre" name="titre" required>
+        <input type="text" id="titre" name="titre" required minlength="3" maxlength="100">
         <span id="titre_error"></span><br>
 
         <label for="contenu">Contenu</label>
         <textarea id="contenu" name="contenu" required></textarea>
         <span id="contenu_error"></span><br>
 
-        <label for="nb_vues">Nombre de Vues</label>
-        <input type="number" id="nb_vues" name="nb_vues" required>
-        <span id="nb_vues_error"></span><br>
-
-        <label for="nb_likes">Nombre de Likes</label>
-        <input type="number" id="nb_likes" name="nb_likes" required>
-        <span id="nb_likes_error"></span><br>
 
         <label for="date_publication">Date de Publication</label>
-        <input type="date" id="date_publication" name="date_publication" required>
+        <input type="date" id="date_publication" name="date_publication" required min="<?= date(format: 'Y-m-d') ?>" max="<?= date('Y-m-d') ?>"><br><br>
         <span id="date_publication_error"></span><br>
 
         <label for="categorie">Catégorie</label>

@@ -1,0 +1,122 @@
+<?php
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../Model/Avis.php';
+
+class AvisController
+{
+    // Récupérer tous les avis
+    public function listAvis()
+    {
+        $sql = "SELECT * FROM avis";
+        $db = Config::getConnexion();
+        try {
+            $list = $db->query($sql);
+            return $list->fetchAll();
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+
+    // Ajouter un avis
+    public function addAvis($avis)
+    {
+        $sql = "INSERT INTO avis (note, commentaire, date_avis, id_blog) 
+                VALUES (:note, :commentaire, :date_avis, :id_blog)";
+    
+        $db = Config::getConnexion();
+    
+        try {
+            $query = $db->prepare($sql);
+            $query->execute([
+                'note' => $avis->getNote(),
+                'commentaire' => $avis->getCommentaire(),
+                'date_avis' => $avis->getDateAvis()->format('Y-m-d'),
+                'id_blog' => $avis->getIdBlog()
+            ]);
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+    }
+    
+
+    // Afficher un avis spécifique
+    public function showAvis($id)
+    {
+        $sql = "SELECT * FROM avis WHERE id_avis = :id_avis";
+        $db = Config::getConnexion();
+        $query = $db->prepare($sql);
+        try {
+            $query->execute(['id_avis' => $id]);
+            return $query->fetch();
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+
+    public function getAvisById($id)
+    {
+        try {
+            $db = Config::getConnexion();
+            $query = $db->prepare("SELECT * FROM avis WHERE id_avis = :id_avis");
+            $query->execute(['id_avis' => $id]);
+            return $query->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Erreur : " . $e->getMessage();
+            return null;
+        }
+    }
+
+
+    // Récupérer les avis par ID de blog
+public function getAvisByBlogId($id_blog)
+{
+    try {
+        $db = Config::getConnexion();
+        $query = $db->prepare("SELECT * FROM avis WHERE id_blog = :id_blog ORDER BY date_avis DESC");
+        $query->execute(['id_blog' => $id_blog]);
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Erreur : " . $e->getMessage();
+        return [];
+    }
+}
+
+
+    // Mettre à jour un avis
+    public function updateAvis($id, $avis)
+    {
+        try {
+            $db = Config::getConnexion();
+            $query = $db->prepare(
+                'UPDATE avis 
+                 SET note = :note, commentaire = :commentaire, date_avis = :date_avis 
+                 WHERE id_avis = :id_avis'
+            );
+            $query->execute([
+                'id_avis' => $id,
+                'note' => $avis->getNote(),
+                'commentaire' => $avis->getCommentaire(),
+                'date_avis' => $avis->getDateAvis()->format('Y-m-d')
+            ]);
+            echo $query->rowCount() . " avis modifié(s) avec succès.<br>";
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    // Supprimer un avis
+    public function deleteAvis($id)
+    {
+        $sql = "DELETE FROM avis WHERE id_avis = :id_avis";
+        $db = Config::getConnexion();
+        $req = $db->prepare($sql);
+        $req->bindValue(':id_avis', $id);
+
+        try {
+            $req->execute();
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+}
+?>
