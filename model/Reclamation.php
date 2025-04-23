@@ -1,5 +1,5 @@
 <?php
-
+if (!class_exists('Reclamation')) {
     class Reclamation
     {
         private ?int $id_reclamation;
@@ -7,14 +7,16 @@
         private ?string $objet;
         private ?string $statut;
         private ?string $nom_utilisateur;
-    }
-    public function __construct($date_creation = null, $objet = null, $statut = null, $nom_utilisateur = null)
+
+        public function __construct(?DateTime $date_creation, ?string $objet, ?string $statut, ?string $nom_utilisateur)
         {
             $this->date_creation = $date_creation;
             $this->objet = $objet;
             $this->statut = $statut;
-            $this->nom_utilisateur = $nom_utilisateur;
-        }
+            $this->nom_utilisateur = $nom_utilisateur;}
+
+
+            
 
         public function show()
         {
@@ -47,13 +49,12 @@
         public function setObjet(?string $objet): void { $this->objet = $objet; }
         public function setStatut(?string $statut): void { $this->statut = $statut; }
         public function setNomUtilisateur(?string $nom_utilisateur): void { $this->nom_utilisateur = $nom_utilisateur; }
+    }
+
+
     
+}
 
 
 
-
-
-
-
-
-
+?>

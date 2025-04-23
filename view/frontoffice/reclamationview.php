@@ -21,6 +21,8 @@ $reclamations = $reclamationController->listReclamations();
  
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
 </head>
 <body>
 <script src="js/verfier.js"></script>
@@ -200,6 +202,7 @@ $reclamations = $reclamationController->listReclamations();
       <a href="modifier.php?id=<?php echo $reclamation['id_reclamation']; ?>"class="edit">Modifier</a>
       <a href="supprimer.php?id=<?php echo $reclamation['id_reclamation']; ?>" class="delete">Supprimer</a>
     </div>
+    
   </div>
   </div>
   </div>
@@ -207,6 +210,73 @@ $reclamations = $reclamationController->listReclamations();
 <?php endforeach; ?>
 
 
+<div class="forum-card form-card">
+  <h3 class="form-heading">Modifier une réclamation</h3>
+  <form id="formForum" class="formulaire" method="POST" action="modifier.php?id=<?php echo $reclamation['id_reclamation']; ?>">
+    <div class="form-group">
+      <label for="date_creation">Date :</label>
+      <input type="date" id="date_creation" name="date_creation" value="<?php echo htmlspecialchars($reclamation['date_creation']); ?>" required>
+    </div>
+    <br>
+    <label for="objet">Objet :</label>
+    <input type="text" id="objet" name="objet" value="<?php echo htmlspecialchars($reclamation['objet']); ?>" required>
+    <br>
+    <label for="statut">Statut :</label>
+    <select id="statut" name="statut" required>
+      <option value="En attente" <?php if ($reclamation['statut'] == "En attente") echo 'selected'; ?>>En attente</option>
+      <option value="En cours" <?php if ($reclamation['statut'] == "En cours") echo 'selected'; ?>>En cours</option>
+      <option value="Résolue" <?php if ($reclamation['statut'] == "Résolue") echo 'selected'; ?>>Résolue</option>
+    </select>
+    <br><br>
+    <label for="nom_utilisateur">Nom d'utilisateur :</label>
+    <input type="text" id="nom_utilisateur" name="nom_utilisateur" value="<?php echo htmlspecialchars($reclamation['nom_utilisateur']); ?>" required>
+    <br><br>
+    <input type="submit" value="Mettre à jour la réclamation" class="btn-primary" />
+    <a href="reclamationview.php" class="btn-secondary">Annuler</a>
+  </form>
+</div>
+
+
+
+
+
+
+
+<?php 
+$reclamations = $reclamationController->listReclamationsWithReponse();
+foreach ($reclamations as $reclamation): ?>
+<div class="forum-card sujet-card">
+    <div class="sujet-content">
+        <h3>Réclamation #<?= htmlspecialchars($reclamation['id_reclamation']) ?></h3>
+        <div class="reclam-info">
+            <span>Date :</span> <?= htmlspecialchars($reclamation['date_creation']) ?>
+        </div>
+        <div class="reclam-info">
+            <span>Objet :</span> <?= htmlspecialchars($reclamation['objet']) ?>
+        </div>
+        <div class="reclam-info">
+            <span>Statut :</span> <?= htmlspecialchars($reclamation['statut']) ?>
+        </div>
+        <div class="reclam-info">
+            <span>Nom utilisateur :</span> <?= htmlspecialchars($reclamation['nom_utilisateur']) ?>
+        </div>
+        <?php if (!empty($reclamation['id_reponse'])): ?>
+        <div class="reclam-info">
+            <span>Réponse :</span> <?= htmlspecialchars($reclamation['reponse_contenu']) ?>
+        </div>
+        <?php endif; ?>
+    </div>
+</div>
+<?php endforeach; ?>
+
  
+<form method="POST" action="?action=add_reponse">
+    <input type="hidden" name="id_reclamation" value="<?= $reclamation['id_reclamation'] ?>">
+    <div class="form-group">
+        <label>Réponse :</label>
+        <textarea name="contenu" required></textarea>
+    </div>
+    <button type="submit" class="btn-primary">Ajouter une réponse</button>
+</form>
 </body>
 </html>

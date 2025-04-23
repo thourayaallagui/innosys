@@ -1,21 +1,22 @@
 <?php
+// Inclure le contrôleur de réclamation
 include __DIR__ . '/../../Controller/ReclamController.php';
 
-// Crée une instance du contrôleur
-$reclamationC = new ReclamController();
+// Créer une instance du contrôleur
+$reclamController = new ReclamController();
 
-// Vérifie si 'id_reclamation' est fourni dans l'URL
+// Vérifier si l'ID de la réclamation est fourni dans l'URL
 if (isset($_GET['id_reclamation']) && !empty($_GET['id_reclamation'])) {
     $id_reclamation = $_GET['id_reclamation'];
 
-    // Appelle la méthode pour supprimer la réclamation
-    $reclamationC->deleteReclamation($id_reclamation);
+    // Appeler la fonction deleteReclamation pour supprimer la réclamation
+    $reclamController->deleteReclamation($id_reclamation);
 
-    // Redirige vers la page d'affichage après suppression
-    header("Location: reclamationview.php");
+    // Rediriger vers la liste des réclamations après suppression
+    header("Location: listReclamations.php");
     exit();
 } else {
-    // Affiche un message d'erreur si l'ID est manquant
+    // Si aucun ID n’est fourni
     echo "Erreur : ID de la réclamation non fourni.";
     exit();
 }

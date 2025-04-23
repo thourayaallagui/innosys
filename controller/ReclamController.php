@@ -1,9 +1,6 @@
 <?php
 require __DIR__.'/../config.php';
-
-
 require_once __DIR__. '/../Model/Reclamation.php';
-
 
 class ReclamController
 {
@@ -40,33 +37,29 @@ class ReclamController
         }
     }
 
-    // Afficher une réclamation spécifique
-    public function showReclamation($id_reclamation)
-    {
-        $sql = "SELECT * FROM reclam WHERE id_reclamation = :id_reclamation";
-        $db = Config::getConnexion();
-        $query = $db->prepare($sql);
-        try {
-            $query->execute(['id_reclamation' => $id_reclamation]);
-            return $query->fetch();
-        } catch(Exception $e) {
-            die('Error: ' . $e->getMessage());
-        }
-    }
-
-   public function getReclamationById($id_reclamation)
+    public function getReclamationById($id_reclamation)
     {
         try {
+            // Récupère la connexion à la base de données via la configuration
             $db = Config::getConnexion();
-            $query = $db->prepare("SELECT * FROM reclam WHERE id_reclamation = :id_reclamation");
+            
+            // Prépare la requête SQL pour récupérer la réclamation par ID
+            $query = $db->prepare("SELECT * FROM reclamation WHERE id_reclamation = :id_reclamation");
+            
+            // Exécute la requête en passant l'ID de la réclamation comme paramètre
             $query->execute(['id_reclamation' => $id_reclamation]);
-            return $query->fetch(PDO::FETCH_ASSOC); // Retourne un tableau associatif
+            
+            // Récupère les résultats de la requête et les retourne sous forme de tableau associatif
+            return $query->fetch(PDO::FETCH_ASSOC);
+            
         } catch (PDOException $e) {
+            // En cas d'erreur, affiche le message d'erreur
             echo "Erreur : " . $e->getMessage();
-            return null;
+            return null;  // Retourne null en cas d'erreur
         }
     }
-      
+    
+
 
     // Modifier une réclamation
     public function updateReclamation($id_reclamation, $reclam)
@@ -74,7 +67,7 @@ class ReclamController
         try {
             $db = Config::getConnexion();
             $query = $db->prepare(
-                "UPDATE reclam SET date_creation = :date_creation, objet = :objet, statut = :statut, nom_utilisateur = :nom_utilisateur 
+                "UPDATE reclam SET date_creation = :date_creation, objet = :objet, statut = :statut, nom_utilisateur = :nom_utilisateur
                  WHERE id_reclamation = :id_reclamation"
             );
             $query->execute([
@@ -90,44 +83,36 @@ class ReclamController
     }
 
     // Supprimer une réclamation
-    public function deleteReclamation($id_reclamation)
-    {
-        $sql = "DELETE FROM reclam WHERE id_reclamation = :id_reclamation";
-        $db = Config::getConnexion();
-        $req = $db->prepare($sql);
-        $req->bindValue(':id_reclamation', $id_reclamation);
+public function deleteReclamation($id)
+{
+    $sql = "DELETE FROM reclamation WHERE id_reclamation = :id_reclamation";
+    $db = Config::getConnexion();
+    $req = $db->prepare($sql);
+    $req->bindValue(':id_reclamation', $id);
 
-        try {
-            $req->execute();
-        } catch(Exception $e) {
-            die('Error: ' . $e->getMessage());
-        }
+    try {
+        $req->execute();
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
     }
 }
 
 
-
-
-
-
- function editReclamation($id) {
-    $reclamation = $this->getReclamationById($id);
-    return $reclamation;
+public function listReclamationsWithReponse() {
+    return $this->model->getReclamationsWithReponse();
 }
 
- function processUpdate() {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
-        $id = $_POST['update_id'];
-        $date_creation = $_POST['date_creation'];
-        $objet = $_POST['objet'];
-        $statut = $_POST['statut'];
-        $nom_utilisateur = $_POST['nom_utilisateur'];
-        
-        if ($this->updateReclamation($id, $date_creation, $objet, $statut, $nom_utilisateur)) {
+
+public function processAddReponse() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_reclamation'], $_POST['contenu'])) {
+        $reponseController = new ReponseController();
+        if ($reponseController->addReponseToReclamation($_POST['id_reclamation'], $_POST['contenu'])) {
             header("Location: reclamationview.php");
             exit();
         }
     }
 }
+}
+
 
 ?>
