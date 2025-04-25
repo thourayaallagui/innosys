@@ -17,6 +17,24 @@ class AvisController
         }
     }
 
+
+    
+    public static function calculerMoyenneParBlog($id_blog) {
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare("SELECT AVG(note) as moyenne FROM avis WHERE id_blog = :id_blog");
+            $query->bindParam(':id_blog', $id_blog, PDO::PARAM_INT);
+            $query->execute();
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            return $result ? $result['moyenne'] : null;
+        } catch (PDOException $e) {
+            echo 'Erreur : ' . $e->getMessage();
+            return null;
+        }
+    }
+    
+
+
     // Ajouter un avis
     public function addAvis($avis)
     {

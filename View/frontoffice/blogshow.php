@@ -4,11 +4,16 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/../../Controller/BlogController.php';
-
+require_once __DIR__ . '/../../Controller/AvisController.php'; 
 $blogController = new BlogController();
+$avisController = new AvisController(); // Instanciation de l'objet AvisController
 $order = isset($_GET['sort']) ? $_GET['sort'] : null;
 $category = isset($_GET['category']) ? $_GET['category'] : null;
-$list = $blogController->listBlogs($order, $category);
+$sortByNote = isset($_GET['sort']) && $_GET['sort'] === 'note';
+$list = $blogController->listBlogstri($order, $category, $sortByNote);
+foreach ($list as &$blog) {
+  $blog['moyenne_note'] = $avisController->calculerMoyenneParBlog($blog['id_blog']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -125,11 +130,13 @@ $list = $blogController->listBlogs($order, $category);
   <button type="submit" class="btn-primary">
     <i class="fas fa-search"></i> <!-- Icône de recherche -->
   </button>
-  <label for="sort">Trier par date :</label>
+  <label for="sort">Trier par date ou par note moyenne:</label>
   <select name="sort" id="sort" onchange="this.form.submit()">
     <option value="">-- Choisir --</option>
     <option value="asc" <?= (isset($_GET['sort']) && $_GET['sort'] == 'asc') ? 'selected' : '' ?>>Date croissante</option>
     <option value="desc" <?= (isset($_GET['sort']) && $_GET['sort'] == 'desc') ? 'selected' : '' ?>>Date décroissante</option>
+    <option value="note" <?= (isset($_GET['sort']) && $_GET['sort'] == 'note') ? 'selected' : '' ?>>Moyenne des notes</option>
+
   </select>
 
 </form>
@@ -144,6 +151,31 @@ $list = $blogController->listBlogs($order, $category);
     <p><strong>Contenu :</strong> <?= isset($blog['contenu']) ? htmlspecialchars(substr($blog['contenu'], 0, 100)) . '...' : '<em>Non défini</em>' ?></p>
     <p><strong>Catégorie :</strong> <?= isset($blog['categorie']) ? htmlspecialchars($blog['categorie']) : '<em>Non défini</em>' ?></p>
     <p><strong>Date de publication :</strong> <?= htmlspecialchars($blog['date_publication']) ?></p>
+      <?php if (isset($blog['moyenne_note']) && $blog['moyenne_note'] !== null): ?>
+<p><strong>Moyenne des notes :</strong> <?= round($blog['moyenne_note'], 2) ?>/5</p>
+<p>
+  <?php
+    $fullStars = floor($blog['moyenne_note']); // Étoiles pleines
+    $halfStar = ($blog['moyenne_note'] - $fullStars >= 0.5) ? true : false; // Étoile à moitié
+    $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0); // Étoiles vides
+
+    for ($i = 0; $i < $fullStars; $i++) {
+        echo '<i class="fas fa-star" style="color: gold;"></i>';
+    }
+
+    if ($halfStar) {
+        echo '<i class="fas fa-star-half-alt" style="color: gold;"></i>';
+    }
+
+    for ($i = 0; $i < $emptyStars; $i++) {
+        echo '<i class="far fa-star" style="color: gold;"></i>';
+    }
+  ?>
+</p>
+<?php else: ?>
+<p><strong>Moyenne des notes :</strong> Aucun avis pour le moment</p>
+<?php endif; ?>
+
 
     <!-- Bouton Ajouter un avis avec lien vers la page d'ajout en passant l'ID du blog -->
     <div class="blog-buttons">

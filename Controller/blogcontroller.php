@@ -30,8 +30,31 @@ class BlogController
         } catch (Exception $e) {
             die('Error: ' . $e->getMessage());
         }
-    }
+    }public function listBlogstri($order = null, $category = null, $sortByNote = false)
+    {
+        require_once __DIR__ . '/../Model/Blog.php'; // Charge le modèle Blog
     
+        // Instancier le contrôleur BlogController pour appeler la méthode listBlogs()
+        $blogController = new BlogController();
+    
+        // Appel de la méthode listBlogs() du contrôleur BlogController
+        $blogs = $blogController->listBlogs($order, $category); 
+    
+        // Charger les moyennes de notes si nécessaire
+        if ($sortByNote) {
+            require_once __DIR__ . '/AvisController.php';
+            $avisController = new AvisController();
+            foreach ($blogs as &$blog) {
+                $blog['moyenne_note'] = $avisController->calculerMoyenneParBlog($blog['id_blog']);
+            }
+    
+            usort($blogs, function($a, $b) {
+                return ($b['moyenne_note'] ?? 0) <=> ($a['moyenne_note'] ?? 0);
+            });
+        }
+    
+        return $blogs;
+    }
     
 
     // Ajouter un blog

@@ -10,6 +10,7 @@ if (isset($_GET['id_blog'])) {
 
     $avisController = new AvisController();
     $avisList = $avisController->getAvisByBlogId($id_blog);
+    $moyenneNote = $avisController->calculerMoyenneParBlog($id_blog);
 
     $blogController = new BlogController();
     $blog = $blogController->getBlogById($id_blog); // Cette fonction doit exister
@@ -53,6 +54,32 @@ if (isset($_GET['id_blog'])) {
           <p><strong>Contenu :</strong> <?= htmlspecialchars(substr($blog['contenu'], 0, 150)) ?>...</p>
           <p><strong>Catégorie :</strong> <?= htmlspecialchars($blog['categorie']) ?></p>
           <p><strong>Date de publication :</strong> <?= htmlspecialchars($blog['date_publication']) ?></p>
+          <?php if ($moyenneNote !== null): ?>
+  <p><strong>Moyenne des notes :</strong> <?= round($moyenneNote, 2) ?>/5</p>
+  <p>
+    <?php
+      $fullStars = floor($moyenneNote); // Étoiles pleines
+      $halfStar = ($moyenneNote - $fullStars >= 0.5) ? true : false; // Étoile à moitié
+      $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0); // Étoiles vides
+
+      for ($i = 0; $i < $fullStars; $i++) {
+          echo '<i class="fas fa-star" style="color: gold;"></i>';
+      }
+
+      if ($halfStar) {
+          echo '<i class="fas fa-star-half-alt" style="color: gold;"></i>';
+      }
+
+      for ($i = 0; $i < $emptyStars; $i++) {
+          echo '<i class="far fa-star" style="color: gold;"></i>';
+      }
+    ?>
+  </p>
+<?php else: ?>
+  <p><strong>Moyenne des notes :</strong> Aucun avis pour le moment</p>
+<?php endif; ?>
+
+
         </div>
       <?php else: ?>
         <p class="warning">Aucun blog trouvé avec cet ID.</p>

@@ -32,6 +32,8 @@ class Avis
         </table>';
     }
 
+    
+
     // Getters
     public function getIdAvis(): ?int { return $this->id_avis; }
     public function getNote(): ?int { return $this->note; }
