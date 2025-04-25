@@ -90,10 +90,35 @@ if (isset($_GET['id_blog'])) {
         <?php if (!empty($avisList)): ?>
           <?php foreach ($avisList as $avis): ?>
             <div class="blog-card" style="position: relative;">
-              <p><strong>Note :</strong> <?= htmlspecialchars($avis['note']) ?>/5</p>
-              <p><strong>Commentaire :</strong> <?= htmlspecialchars($avis['commentaire']) ?></p>
-              <p><strong>Date :</strong> <?= htmlspecialchars($avis['date_avis']) ?></p>
-              
+            <p><strong>Note :</strong> <?= htmlspecialchars($avis['note']) ?>/5</p>
+            <p>
+    <?php
+      $moyenneNote = (float)$avis['note']; // S'assurer que la note est un nombre flottant
+      $fullStars = floor($moyenneNote); // Étoiles pleines
+      $halfStar = ($moyenneNote - $fullStars >= 0.5) ? true : false; // Étoile à moitié
+      $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0); // Étoiles vides
+
+      // Affichage des étoiles pleines
+      for ($i = 0; $i < $fullStars; $i++) {
+          echo '<i class="fas fa-star" style="color: gold;"></i>';
+      }
+
+      // Affichage de l'étoile à moitié si nécessaire
+      if ($halfStar) {
+          echo '<i class="fas fa-star-half-alt" style="color: gold;"></i>';
+      }
+
+      // Affichage des étoiles vides
+      for ($i = 0; $i < $emptyStars; $i++) {
+          echo '<i class="far fa-star" style="color: gold;"></i>';
+      }
+    ?>
+  </p>
+
+  <p><strong>Commentaire :</strong> <?= htmlspecialchars($avis['commentaire']) ?></p>
+  <p><strong>Date :</strong> <?= htmlspecialchars($avis['date_avis']) ?></p>
+
+
               <!-- Icône de suppression -->
               <a href="deleteavis.php?id_avis=<?= $avis['id_avis'] ?>&id_blog=<?= $id_blog ?>"
                  onclick="return confirm('Voulez-vous vraiment supprimer cet avis ?')"
