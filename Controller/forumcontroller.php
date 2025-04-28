@@ -4,6 +4,51 @@ require __DIR__.'/../Modele/forum.php';
 
 class ForumController
 {
+    public function listForumsll($order = 'desc') {
+        $order = strtolower($order) === 'asc' ? 'ASC' : 'DESC'; // sécurité
+        $sql = "SELECT * FROM forum_sujets ORDER BY date_creation $order"; // ✅ on garde cette ligne !
+        $db = Config::getConnexion();
+        try {
+            $list = $db->query($sql);
+            return $list->fetchAll();
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+    public function listForumsll2($order = 'desc') {
+        $order = strtolower($order) === 'asc' ? 'ASC' : 'DESC'; // sécurité
+        $sql = "SELECT * FROM forum_sujets ORDER BY likes $order"; // ✅ on garde cette ligne !
+        $db = Config::getConnexion();
+        try {
+            $list = $db->query($sql);
+            return $list->fetchAll();
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+    public function listForumsl($sortBy = 'date_creation', $sortOrder = 'desc') {
+        $allowedSortBy = ['date_creation', 'likes', 'titre'];
+        $allowedSortOrder = ['asc', 'desc'];
+    
+        if (!in_array($sortBy, $allowedSortBy)) {
+            $sortBy = 'date_creation';
+        }
+        if (!in_array(strtolower($sortOrder), $allowedSortOrder)) {
+            $sortOrder = 'desc';
+        }
+    
+        $sql = "SELECT * FROM forum_sujets ORDER BY $sortBy $sortOrder";
+    
+        $db = Config::getConnexion();
+        try {
+            $list = $db->query($sql);
+            return $list->fetchAll();
+        } catch (Exception $e) {
+            die('Erreur : ' . $e->getMessage());
+        }
+    }
+    
+    
     // Récupérer tous les forums
     public function listForums()
     {
@@ -100,5 +145,18 @@ public function addForum($forum)
             die('Error: ' . $e->getMessage());
         }
     }
+    // Ajouter un like à un sujet
+public function likeSujet($id)
+{
+    try {
+        $db = Config::getConnexion();
+        $sql = "UPDATE forum_sujets SET likes = likes + 1 WHERE id = :id";
+        $query = $db->prepare($sql);
+        $query->execute(['id' => $id]);
+    } catch (PDOException $e) {
+        echo 'Erreur : ' . $e->getMessage();
+    }
+}
+
 }
 ?>

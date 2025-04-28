@@ -1,9 +1,42 @@
 <?php
-include __DIR__.'/../../Controller/Forumcontroller.php';
+include __DIR__ . '/../../Controller/CommentaireController.php';
+$errorContenu = '';
 
-$forumC = new Forumcontroller();
-$list = $forumC->listForumsll2($order = 'desc') ; // méthode qui retourne tous les sujets du forum
+$commentaireC = new CommentaireController();
+$commentaire = null;
+
+if (isset($_GET['id_com']) && !empty($_GET['id_com'])) {
+    $id_com = $_GET['id_com'];
+
+    // Récupérer le commentaire depuis la base
+    $commentaire = $commentaireC->getCommentaireById($id_com);
+    if (!$commentaire) {
+        die("Erreur : Le commentaire n'existe pas.");
+    }
+} else {
+    die("Erreur : ID du commentaire non fourni.");
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $contenu = trim($_POST['contenu'] ?? '');
+
+    if (strlen($contenu) < 5) {
+        $errorContenu = " Le commentaire doit contenir au moins 5 caractères.";
+    }
+
+    if (empty($errorContenu)) {
+        // Mettre à jour le commentaire
+        $updatedCommentaire = new Commentaire($contenu, new DateTime(), $commentaire['id']);
+        $commentaireC->updateCommentaire($id_com, $updatedCommentaire);
+
+
+        // Redirection vers le forum lié
+        header("Location: showforum.php?id=" . $commentaire['id']);
+        exit();
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,13 +44,12 @@ $list = $forumC->listForumsll2($order = 'desc') ; // méthode qui retourne tous 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Click&Go</title>
   <link rel="stylesheet" href="css/style.css" />
-  
+  <link rel="stylesheet" href="css/verifier.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 <body>
 <script src="js/verfier.js"></script>
-<script src="js/verif2.js"></script>
   <header>
     <div class="container nav-bar">
       <h1 class="logo">Click&Go</h1>
@@ -71,7 +103,7 @@ $list = $forumC->listForumsll2($order = 'desc') ; // méthode qui retourne tous 
     </div>
   </section>
 
-  <script src="script.js"></script>
+  <script src="js/script.js"></script>
   <section id="about" class="about-section">
     <div class="container">
       <h2 class="section-title">ABOUT US</h2>
@@ -149,71 +181,38 @@ $list = $forumC->listForumsll2($order = 'desc') ; // méthode qui retourne tous 
   
  
  
-  <section id="forum" class="forum-section">
+ 
+<section id="forum" class="forum-section">
   <div class="container forum-container">
-    <h2 class="forum-title">Forum</h2>
+    <h2 class="forum-title">Forumer</h2>
     <p class="forum-subtitle">
-      Un espace pour poser des questions, partager des idées, organiser des événements, ou parler de divertissement. Rejoignez la discussion !
+      Un espace pour poser des questions, partager des idées, organiser des événements, ou parler de divertissement, publicité et loisirs. Rejoignez la discussion !
     </p>
 
-    <!-- Formulaire de création en haut -->
-    <div class="forum-card form-card">
-      <h3 class="form-heading">Créer un sujet</h3>
-      <form id="formForum" class="formulaire" method="POST" action="addforum.php">
-        <input type="text" name="titre" id="forumTitre" placeholder="Titre du sujet" />
-        <div id="msg-titre" class="message-erreur"></div>
-
-        <textarea name="contenu" id="forumContenu" placeholder="Contenu du sujet"></textarea>
-        <div id="msg-contenu" class="message-erreur"></div>
-
-        <input type="submit" value="Créer le sujet" class="btn-primary" />
-      </form>
+  
+    <div class="container">
+        <h2>Modifier le Commentaire</h2>
+        <form action="updateCom.php?id_com=<?= $id_com ?>" method="POST">
+            <label for="contenu">Contenu</label><br>
+            <textarea name="contenu" id="contenu" rows="5" cols="50"><?= htmlspecialchars($_POST['contenu'] ?? $commentaire['contenu']) ?></textarea><br>
+            <div class="message-erreur"><?= $errorContenu ?></div>
+            <button type="submit">Mettre à jour</button>
+        </form>
+        <script src="js/verif2.js"></script>
     </div>
+       
+  
+  
+  
+  
 
-    <?php foreach($list as $forum): ?>
-  <div class="forum-card sujet-card">
-    <div class="sujet-content">
-      <h4><?= htmlspecialchars($forum['titre']) ?></h4>
-      <p><?= nl2br(htmlspecialchars($forum['contenu'])) ?></p>
-      <p class="date">Créé le : <?= date('d/m/Y H:i', strtotime($forum['date_creation'])) ?></p>
-
-      <div class="forum-buttons">
-        <a href="updateForum.php?id=<?= $forum['id'] ?>" class="  ">Modifier</a>
-        <a href="deleteForum.php?id=<?= $forum['id'] ?>" class="delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce forum ?');">Supprimer</a>
-        <button class="btn btn-green"type="submit" onclick="toggleCommentaire('commentaire-<?= $forum['id'] ?>')">Commentaires</button>
-        <form action="likeForum.php" method="POST" class="like-form" style="display:inline;">
-  <input type="hidden" name="forum_id" value="<?= $forum['id'] ?>">
-  <button type="submit" class="btn-like">❤️ Like (<?= $forum['likes'] ?>)</button>
-</form>
-
-      </div>
+</div>
     </div>
-
-    <!-- Commentaires cachés par défaut -->
-    <div class="commentaire-wrapper" id="commentaire-<?= $forum['id'] ?>" style="display: none;">
-      <?php
-         $_GET['id']= $forum['id']; // Pour showcom.php
-        include 'showcom.php';
-      ?>
-    </div>
-  </div>
-<?php endforeach; ?>
+  </section>
+  
 
 
-  </div>
-</section>
-<script>
-  function toggleCommentaire(id) {
-    const section = document.getElementById(id);
-    if (section.style.display === "none") {
-      section.style.display = "block";
-    } else {
-      section.style.display = "none";
-    }
-  }
-</script>
+  
+   
 
-
-   </body>
-</html>
 

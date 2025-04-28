@@ -23,8 +23,8 @@ class CommentaireController
     // Ajouter un commentaire
     public function addCommentaire($commentaire)
     {
-        $sql = "INSERT INTO commentaire (contenu ) 
-                VALUES (:contenu )";
+        $sql = "INSERT INTO commentaire (contenu ,id ) 
+                VALUES (:contenu ,:id )";
         
 
         $db = Config::getConnexion();
@@ -33,6 +33,7 @@ class CommentaireController
             $query = $db->prepare($sql);
             $query->execute([
                 'contenu' => $commentaire->getContenu(),
+                'id' => $commentaire->getId(),
                 
             ]);
         } catch (Exception $e) {
@@ -70,7 +71,7 @@ class CommentaireController
 
     // Modifier un commentaire
     public function updateCommentaire($id_com, $commentaire)
-    {
+    {   
         try {
             $db = Config::getConnexion();
             $query = $db->prepare(

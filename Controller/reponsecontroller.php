@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../config.php';
+require_once __DIR__.'/../config.php';
 require __DIR__.'/../Modele/reponse.php';
 
 class ReponseController
@@ -20,15 +20,16 @@ class ReponseController
     // Ajouter une réponse
     public function addReponse($reponse)
     {
-        $sql = "INSERT INTO reponse (contenu, id) 
-                VALUES (:contenu, :id)";
+        $sql = "INSERT INTO reponse (contenu, id_com) 
+                VALUES (:contenu, :id_com)";
         $db = Config::getConnexion();
 
         try {
             $query = $db->prepare($sql);
             $query->execute([
                 'contenu' => $reponse->getContenu(),
-                'id' => $reponse->getId()
+               
+                'id_com' => $reponse->getIdCom()
             ]);
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
@@ -69,14 +70,14 @@ class ReponseController
         try {
             $db = Config::getConnexion();
             $query = $db->prepare(
-                'UPDATE reponse SET contenu = :contenu, date_creation = :date_creation, id = :id 
+                'UPDATE reponse SET contenu = :contenu, date_creation = :date_creation, id_com = :id_com 
                  WHERE id_rep = :id_rep'
             );
             $query->execute([
                 'id_rep' => $id_rep,
                 'contenu' => $reponse->getContenu(),
                 'date_creation' => $reponse->getDateCreation()->format('Y-m-d H:i:s'),
-                'id' => $reponse->getId()
+                'id_com' => $reponse->getIdCom()
             ]);
             echo $query->rowCount() . " enregistrement(s) mis à jour avec succès.<br>";
         } catch (PDOException $e) {

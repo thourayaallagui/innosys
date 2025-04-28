@@ -6,13 +6,13 @@ class Commentaire
     private ?DateTime $date_creation;
     private ?int $id; // ID du sujet du forum lié
 
-    public function __construct(?string $contenu, ?DateTime $date_creation = null)
+    public function __construct(?string $contenu, ?DateTime $date_creation = null, ?int $id )
     {
-        
         $this->contenu = $contenu;
-       
         $this->date_creation = $date_creation ?? new DateTime();
+        $this->id = $id; // Clé étrangère : id du forum
     }
+    
 
     public function show()
     {

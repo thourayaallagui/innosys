@@ -4,15 +4,16 @@ class Reponse
     private ?int $id_rep;
     private ?string $contenu;
     private ?DateTime $date_creation;
-    private ?int $id; // id du sujet du forum auquel cette réponse appartient
+    private ?int $id_com; // id du commentaire auquel cette réponse appartient
 
     // Constructeur
-    public function __construct(?string $contenu, ?int $id, ?DateTime $date_creation = null, ?int $id_rep = null)
+    public function __construct(?string $contenu,  ?DateTime $date_creation = null,?int $id_com)
     {
-        $this->id_rep = $id_rep;
+    
         $this->contenu = $contenu;
-        $this->id = $id;
+       
         $this->date_creation = $date_creation ?? new DateTime();
+        $this->id_com = $id_com;
     }
 
     // Méthode d'affichage
@@ -54,12 +55,12 @@ class Reponse
     public function getIdRep(): ?int { return $this->id_rep; }
     public function getContenu(): ?string { return $this->contenu; }
     public function getDateCreation(): ?DateTime { return $this->date_creation; }
-    public function getId(): ?int { return $this->id; }
+    public function getIdCom(): ?int { return $this->id_com; }
 
     // Setters
     public function setIdRep(?int $id_rep): void { $this->id_rep = $id_rep; }
     public function setContenu(?string $contenu): void { $this->contenu = $contenu; }
     public function setDateCreation(?DateTime $date_creation): void { $this->date_creation = $date_creation; }
-    public function setId(?int $id): void { $this->id = $id; }
+    public function setIdCom(?int $id_com): void { $this->id_com = $id_com; }
 }
 ?>

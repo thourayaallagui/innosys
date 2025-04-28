@@ -8,7 +8,9 @@ if (isset($_POST['titre'], $_POST['contenu'])) {
     $forum = new Forum(
         $_POST['titre'],
         $_POST['contenu'],
-        new DateTime()
+        new DateTime(),
+        null,       // id sera généré automatiquement par la BDD
+        0  
     );
 
     // Appel à la fonction d'ajout
@@ -159,6 +161,7 @@ if (isset($_POST['titre'], $_POST['contenu'])) {
           </div>
         </div>
       </div>
+      
     </div>
   </section>
   

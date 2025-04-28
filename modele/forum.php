@@ -5,6 +5,7 @@ class Forum
     private ?string $titre;
     private ?string $contenu;
     private ?DateTime $date_creation;
+    private ?int $likes;
 
     // Constructeur
     public function __construct(?string $titre, ?string $contenu, ?DateTime $date_creation = null, ?int $id = null)
@@ -13,6 +14,7 @@ class Forum
         $this->titre = $titre;
         $this->contenu = $contenu;
         $this->date_creation = $date_creation ?? new DateTime();
+        $this->likes = $likes ?? 0;
     }
 
     // Méthode d'affichage
@@ -45,6 +47,16 @@ class Forum
                     text-decoration: none;
                     border-radius: 5px;
                 ">Supprimer</a>
+                
+                <a href="like_sujet.php?id=' . $this->id . '" style="
+                    padding: 5px 10px;
+                    background-color:rgb(239, 236, 136);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    margin-left: 10px;
+                ">❤️ Like (' . $this->likes . ')</a>
+            
             </div>
         </div>';
     }
@@ -54,11 +66,14 @@ class Forum
     public function getTitre(): ?string { return $this->titre; }
     public function getContenu(): ?string { return $this->contenu; }
     public function getDateCreation(): ?DateTime { return $this->date_creation; }
+    public function getLikes(): ?int { return $this->likes; }
+
 
     // Setters
     public function setId(?int $id): void { $this->id = $id; }
     public function setTitre(?string $titre): void { $this->titre = $titre; }
     public function setContenu(?string $contenu): void { $this->contenu = $contenu; }
     public function setDateCreation(?DateTime $date_creation): void { $this->date_creation = $date_creation; }
+    public function setLikes(?int $likes): void { $this->likes = $likes; }
 }
 ?>
