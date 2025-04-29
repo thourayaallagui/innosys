@@ -49,8 +49,8 @@ $list = $blogController->listBlogs();
       <li class="active">
         <span>Forms</span>
         <ul class="submenu">
-          <li><a href="formulaire_blog.php">Formulaire Blog</a></li>
-          <li><a href="liste_blog.php">Liste</a></li>
+          <li><a href="addblog.php">Formulaire Blog</a></li>
+          <li><a href="showblog.php">Liste</a></li>
         </ul>
       </li>
       <li><a href="#">Tables</a></li>

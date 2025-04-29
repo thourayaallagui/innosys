@@ -7,7 +7,7 @@ class Avis
     private ?DateTime $date_avis;
     private ?int $id_blog;
 
-    // Constructeur
+    
     public function __construct(?int $note, ?string $commentaire, ?DateTime $date_avis, ?int $id_blog)
     {
         $this->note = $note;
@@ -34,7 +34,6 @@ class Avis
 
     
 
-    // Getters
     public function getIdAvis(): ?int { return $this->id_avis; }
     public function getNote(): ?int { return $this->note; }
     public function getCommentaire(): ?string { return $this->commentaire; }
@@ -42,7 +41,6 @@ class Avis
     public function getIdBlog(): ?int { return $this->id_blog; }
 
 
-    // Setters
     public function setIdAvis(?int $id_avis): void { $this->id_avis = $id_avis; }
     public function setNote(?int $note): void { $this->note = $note; }
     public function setCommentaire(?string $commentaire): void { $this->commentaire = $commentaire; }

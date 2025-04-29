@@ -42,8 +42,8 @@ if (
       <li class="active">
         <span>Forms</span>
         <ul class="submenu">
-          <li><a href="formulaire.html">formulaire</a></li>
-          <li><a href="liste.html">Liste</a></li>
+          <li><a href="addblog.php">formulaire</a></li>
+          <li><a href="showblog.php">Liste</a></li>
         </ul>
       </li>
       <li><a href="#">Tables</a></li>
@@ -77,7 +77,21 @@ if (
         <span id="date_publication_error"></span><br>
 
         <label for="categorie">Catégorie</label>
-        <input type="text" id="categorie" name="categorie" required>
+        <select id="categorie" name="categorie" required>
+    <option value="">-- Sélectionnez une catégorie --</option>
+    <option value="Événement">Événement</option>
+    <option value="Cinéma">Cinéma</option>
+    <option value="Musique">Musique</option>
+    <option value="Voyage">Voyage</option>
+    <option value="Sport">Sport</option>
+    <option value="Technologie">Technologie</option>
+    <option value="Nature et Activités en plein air">Nature et Activités en plein air</option>
+    <option value="Jeux vidéo">Jeux vidéo</option>
+    <option value="Éducation et Apprentissage">Éducation et Apprentissage</option>
+    <option value="Cuisine">Cuisine</option>
+    <option value="Célébrations et Fêtes">Célébrations et Fêtes</option>
+    <option value="Animaux">Animaux</option>
+</select>
         <span id="categorie_error"></span><br>
 
         <button type="submit" class="btn btn-primary btn-user btn-block">

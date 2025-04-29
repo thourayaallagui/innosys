@@ -13,7 +13,7 @@ if (isset($_GET['id_blog'])) {
     $moyenneNote = $avisController->calculerMoyenneParBlog($id_blog);
 
     $blogController = new BlogController();
-    $blog = $blogController->getBlogById($id_blog); // Cette fonction doit exister
+    $blog = $blogController->getBlogById($id_blog); 
 }
 ?>
 
@@ -35,7 +35,7 @@ if (isset($_GET['id_blog'])) {
           <li><a href="index.html">Home</a></li>
           <li><a href="index.html#about">About</a></li>
           <li><a href="index.html#evenements">Événements</a></li>
-          <li><a href="blog.php">Blog</a></li>
+          <li><a href="blogshow.php">blog</a></li>
           <li><a href="#">Team</a></li>
           <li class="dropdown"><a href="#">Dropdown ▾</a></li>
           <li><a href="#">Contact</a></li>
@@ -93,22 +93,22 @@ if (isset($_GET['id_blog'])) {
             <p><strong>Note :</strong> <?= htmlspecialchars($avis['note']) ?>/5</p>
             <p>
     <?php
-      $moyenneNote = (float)$avis['note']; // S'assurer que la note est un nombre flottant
-      $fullStars = floor($moyenneNote); // Étoiles pleines
-      $halfStar = ($moyenneNote - $fullStars >= 0.5) ? true : false; // Étoile à moitié
-      $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0); // Étoiles vides
+      $moyenneNote = (float)$avis['note']; 
+      $fullStars = floor($moyenneNote); 
+      $halfStar = ($moyenneNote - $fullStars >= 0.5) ? true : false; 
+      $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0); 
 
-      // Affichage des étoiles pleines
+      
       for ($i = 0; $i < $fullStars; $i++) {
           echo '<i class="fas fa-star" style="color: gold;"></i>';
       }
 
-      // Affichage de l'étoile à moitié si nécessaire
+      
       if ($halfStar) {
           echo '<i class="fas fa-star-half-alt" style="color: gold;"></i>';
       }
 
-      // Affichage des étoiles vides
+      
       for ($i = 0; $i < $emptyStars; $i++) {
           echo '<i class="far fa-star" style="color: gold;"></i>';
       }

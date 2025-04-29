@@ -8,12 +8,13 @@ require_once __DIR__ . '/../../Controller/AvisController.php';
 $blogController = new BlogController();
 $avisController = new AvisController(); // Instanciation de l'objet AvisController
 $order = isset($_GET['sort']) ? $_GET['sort'] : null;
-$category = isset($_GET['category']) ? $_GET['category'] : null;
+$category = isset($_GET['categorie']) ? $_GET['categorie'] : null;
 $sortByNote = isset($_GET['sort']) && $_GET['sort'] === 'note';
 $list = $blogController->listBlogstri($order, $category, $sortByNote);
-foreach ($list as &$blog) {
-  $blog['moyenne_note'] = $avisController->calculerMoyenneParBlog($blog['id_blog']);
+foreach ($list as $index => $blog) {
+  $list[$index]['moyenne_note'] = $avisController->calculerMoyenneParBlog($blog['id_blog']);
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -34,7 +35,7 @@ foreach ($list as &$blog) {
           <li><a href="index.html">Home</a></li>
           <li><a href="index.html#about">About</a></li>
           <li><a href="index.html#evenements">Événements</a></li>
-          <li><a href="blog.php" class="active">Blog</a></li>
+          <li><a href="blogshow.php">blog</a></li>
           <li><a href="#">Team</a></li>
           <li class="dropdown"><a href="#">Dropdown ▾</a></li>
           <li><a href="#">Contact</a></li>
@@ -96,8 +97,13 @@ foreach ($list as &$blog) {
 
 
 .blog-card p {
-  margin: 10px 0;
+  margin: 20px 0;
 }
+.blog-section .container {
+  width: 50%;
+  margin: 0 auto;
+}
+
 
 .blog-buttons {
   display: flex;
@@ -126,7 +132,21 @@ foreach ($list as &$blog) {
 
 <form method="GET" class="sort-form">
   <label for="category">Rechercher par catégorie :</label>
-  <input type="text" name="category" id="category" placeholder="Ex: Voyage" value="<?= isset($_GET['category']) ? htmlspecialchars($_GET['category']) : '' ?>">
+  <select id="categorie" name="categorie" required>
+    <option value="">-- Sélectionnez une catégorie --</option>
+    <option value="Événement">Événement</option>
+    <option value="Cinéma">Cinéma</option>
+    <option value="Musique">Musique</option>
+    <option value="Voyage">Voyage</option>
+    <option value="Sport">Sport</option>
+    <option value="Technologie">Technologie</option>
+    <option value="Nature et Activités en plein air">Nature et Activités en plein air</option>
+    <option value="Jeux vidéo">Jeux vidéo</option>
+    <option value="Éducation et Apprentissage">Éducation et Apprentissage</option>
+    <option value="Cuisine">Cuisine</option>
+    <option value="Célébrations et Fêtes">Célébrations et Fêtes</option>
+    <option value="Animaux">Animaux</option>
+</select>
   <button type="submit" class="btn-primary">
     <i class="fas fa-search"></i> <!-- Icône de recherche -->
   </button>
@@ -142,53 +162,67 @@ foreach ($list as &$blog) {
 </form>
   <section class="blog-section">
     <div class="container">
-      <h2 class="section-title">Nos Derniers Blogs</h2>
-      <div class="blog-list">
-        <?php if (!empty($list)): ?>
-            <?php foreach ($list as $blog): ?>
-  <div class="blog-card">
-    <p><strong>Titre :</strong> <?= htmlspecialchars($blog['titre']) ?></p>
-    <p><strong>Contenu :</strong> <?= isset($blog['contenu']) ? htmlspecialchars(substr($blog['contenu'], 0, 100)) . '...' : '<em>Non défini</em>' ?></p>
-    <p><strong>Catégorie :</strong> <?= isset($blog['categorie']) ? htmlspecialchars($blog['categorie']) : '<em>Non défini</em>' ?></p>
-    <p><strong>Date de publication :</strong> <?= htmlspecialchars($blog['date_publication']) ?></p>
-      <?php if (isset($blog['moyenne_note']) && $blog['moyenne_note'] !== null): ?>
-<p><strong>Moyenne des notes :</strong> <?= round($blog['moyenne_note'], 2) ?>/5</p>
-<p>
-  <?php
-    $fullStars = floor($blog['moyenne_note']); // Étoiles pleines
-    $halfStar = ($blog['moyenne_note'] - $fullStars >= 0.5) ? true : false; // Étoile à moitié
-    $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0); // Étoiles vides
+    <h2 class="section-title">Nos Derniers Blogs</h2>
+<div class="blog-list">
+  <?php if (!empty($list)): ?>
+    <?php foreach ($list as $blog): ?>
+      <?php
+$category = strtolower(trim($blog['categorie'])); // ex: "Cinéma" => "cinéma"
+$imageRelativePath = 'ImagesBlogs/' . $category . '.jpg';
+$imageAbsolutePath = __DIR__ . '/ImagesBlogs/' . $category . '.jpg';
 
-    for ($i = 0; $i < $fullStars; $i++) {
-        echo '<i class="fas fa-star" style="color: gold;"></i>';
-    }
+if (!file_exists($imageAbsolutePath)) {
+    $imageRelativePath = 'ImagesBlogs/default.jpg'; // image par défaut si l’image spécifique n’existe pas
+}
 
-    if ($halfStar) {
-        echo '<i class="fas fa-star-half-alt" style="color: gold;"></i>';
-    }
-
-    for ($i = 0; $i < $emptyStars; $i++) {
-        echo '<i class="far fa-star" style="color: gold;"></i>';
-    }
-  ?>
-</p>
-<?php else: ?>
-<p><strong>Moyenne des notes :</strong> Aucun avis pour le moment</p>
-<?php endif; ?>
+?>
 
 
-    <!-- Bouton Ajouter un avis avec lien vers la page d'ajout en passant l'ID du blog -->
-    <div class="blog-buttons">
-  <a href="addavis.php?id_blog=<?= urlencode($blog['id_blog']) ?>" class="btn-primary">Ajouter un avis</a>
-  <a href="showavis.php?id_blog=<?= urlencode($blog['id_blog']) ?>" class="btn-primary">Afficher les avis</a>
-</div>
-  </div>
-<?php endforeach; ?>
+      <div class="blog-card">
+      <img src="<?= $imageRelativePath ?>" alt="Image pour <?= htmlspecialchars($blog['categorie']) ?>" style="width:100%; max-height:250px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
 
+        <p><strong>Titre :</strong> <?= htmlspecialchars($blog['titre']) ?></p>
+        <p><strong>Contenu :</strong>
+          <?= isset($blog['contenu']) ? htmlspecialchars(substr($blog['contenu'], 0, 100)) . '...' : '<em>Non défini</em>' ?>
+        </p>
+        <p><strong>Catégorie :</strong> <?= htmlspecialchars($blog['categorie'] ?? 'Non défini') ?></p>
+        <p><strong>Date de publication :</strong> <?= htmlspecialchars($blog['date_publication']) ?></p>
+
+        <!-- Affichage moyenne des notes -->
+        <?php if (isset($blog['moyenne_note']) && $blog['moyenne_note'] !== null): ?>
+          <p><strong>Moyenne des notes :</strong> <?= round($blog['moyenne_note'], 2) ?>/5</p>
+          <p>
+            <?php
+              $fullStars = floor($blog['moyenne_note']);
+              $halfStar = ($blog['moyenne_note'] - $fullStars >= 0.5);
+              $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+
+              for ($i = 0; $i < $fullStars; $i++) {
+                echo '<i class="fas fa-star" style="color: gold;"></i>';
+              }
+              if ($halfStar) {
+                echo '<i class="fas fa-star-half-alt" style="color: gold;"></i>';
+              }
+              for ($i = 0; $i < $emptyStars; $i++) {
+                echo '<i class="far fa-star" style="color: gold;"></i>';
+              }
+            ?>
+          </p>
         <?php else: ?>
-          <p>Aucun blog disponible pour le moment.</p>
+          <p><strong>Moyenne des notes :</strong> Aucun avis pour le moment</p>
         <?php endif; ?>
+
+        <!-- Boutons -->
+        <div class="blog-buttons">
+          <a href="addavis.php?id_blog=<?= urlencode($blog['id_blog']) ?>" class="btn-primary">Ajouter un avis</a>
+          <a href="showavis.php?id_blog=<?= urlencode($blog['id_blog']) ?>" class="btn-primary">Afficher les avis</a>
+        </div>
       </div>
+    <?php endforeach; ?>
+  <?php else: ?>
+    <p>Aucun blog disponible pour le moment.</p>
+  <?php endif; ?>
+</div>
     </div>
   </section>
 

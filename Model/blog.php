@@ -9,7 +9,7 @@ class Blog
     private ?string $categorie;
     private array $avisList = [];
 
-    // Constructeur
+   
     public function __construct(?string $titre, ?string $contenu, ?DateTime $date_publication, ?string $categorie)
     {
         $this->titre = $titre;
@@ -23,8 +23,6 @@ class Blog
             <tr align="center">
                 <td>Titre</td>
                 <td>Contenu</td>
-                <td>Vues</td>
-                <td>Likes</td>
                 <td>Date de publication</td>
                 <td>Catégorie</td>
             </tr>
@@ -36,26 +34,28 @@ class Blog
             </tr>
         </table>';
     }
+    
     public function addAvis(Avis $avis): void {
         $this->avisList[] = $avis;
     }
     
-    // Retourner tous les avis
+    
     public function getAvisList(): array {
         return $this->avisList;
     }
-    // Getters
+    
     public function getIdBlog(): ?int { return $this->id_blog; }
     public function getTitre(): ?string { return $this->titre; }
     public function getContenu(): ?string { return $this->contenu; }
     public function getDatePublication(): ?DateTime { return $this->date_publication; }
     public function getCategorie(): ?string { return $this->categorie; }
-
-    // Setters
+   
+    
     public function setIdBlog(?int $id_blog): void { $this->id_blog = $id_blog; }
     public function setTitre(?string $titre): void { $this->titre = $titre; }
     public function setContenu(?string $contenu): void { $this->contenu = $contenu; }
     public function setDatePublication(?DateTime $date_publication): void { $this->date_publication = $date_publication; }
     public function setCategorie(?string $categorie): void { $this->categorie = $categorie; }
+
 }
 ?>

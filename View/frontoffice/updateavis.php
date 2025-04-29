@@ -6,7 +6,7 @@ $avisController = new AvisController();
 $error = '';
 $avis = null;
 
-// Vérifie que l'ID est passé
+
 if (isset($_GET['id_avis']) && !empty($_GET['id_avis'])) {
     $id_avis = $_GET['id_avis'];
     $avis = $avisController->getAvisById($id_avis);  // Assurez-vous que cette méthode existe pour récupérer un avis par ID.
@@ -31,7 +31,7 @@ if (isset($_POST['note'], $_POST['commentaire'], $_POST['date_avis'])) {
     $avisController->updateAvis($id_avis, $updatedAvis);
 
     // Rediriger après mise à jour
-    header("Location: success_page.php");  // Remplacer par la page appropriée
+    header("Location: blogshow.php");  
     exit();
 }
 ?>

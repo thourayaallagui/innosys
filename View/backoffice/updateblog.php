@@ -6,7 +6,7 @@ $error = '';
 $blog = null;
 $blogController = new BlogController();
 
-// Vérifie que l'ID du blog est bien passé par l'URL
+
 if (isset($_GET['id_blog']) && !empty($_GET['id_blog'])) {
     $id_blog = $_GET['id_blog'];
     $blog = $blogController->getBlogById($id_blog);
@@ -18,7 +18,7 @@ if (isset($_GET['id_blog']) && !empty($_GET['id_blog'])) {
     die("Erreur : ID du blog non fourni.");
 }
 
-// Traitement du formulaire
+
 if (
     isset($_POST['titre'], $_POST['contenu'], $_POST['date_publication'], $_POST['categorie'])
 ) {
@@ -31,8 +31,8 @@ if (
 
     $blogController->updateBlog($id_blog, $updatedBlog);
 
-    // Redirection après mise à jour
-    header("Location: liste_blog.php");
+    
+    header("Location: showblog.php");
     exit();
 }
 ?>
@@ -98,8 +98,8 @@ if (
         <li class="active">
             <span>Forms</span>
             <ul class="submenu">
-                <li><a href="formulaire_blog.php">Formulaire Blog</a></li>
-                <li><a href="liste_blog.php">Liste</a></li>
+            <li><a href="addblog.php">Formulaire Blog</a></li>
+            <li><a href="showblog.php">Liste</a></li>
             </ul>
         </li>
         <li><a href="#">Tables</a></li>

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../Model/Avis.php';
 
 class AvisController
 {
-    // Récupérer tous les avis
+    
     public function listAvis()
     {
         $sql = "SELECT * FROM avis";
@@ -35,7 +35,7 @@ class AvisController
     
 
 
-    // Ajouter un avis
+    
     public function addAvis($avis)
     {
         $sql = "INSERT INTO avis (note, commentaire, date_avis, id_blog) 
@@ -57,7 +57,7 @@ class AvisController
     }
     
 
-    // Afficher un avis spécifique
+    
     public function showAvis($id)
     {
         $sql = "SELECT * FROM avis WHERE id_avis = :id_avis";
@@ -85,7 +85,7 @@ class AvisController
     }
 
 
-    // Récupérer les avis par ID de blog
+    
 public function getAvisByBlogId($id_blog)
 {
     try {
@@ -100,7 +100,7 @@ public function getAvisByBlogId($id_blog)
 }
 
 
-    // Mettre à jour un avis
+    
     public function updateAvis($id, $avis)
     {
         try {
@@ -122,7 +122,7 @@ public function getAvisByBlogId($id_blog)
         }
     }
 
-    // Supprimer un avis
+    
     public function deleteAvis($id)
     {
         $sql = "DELETE FROM avis WHERE id_avis = :id_avis";

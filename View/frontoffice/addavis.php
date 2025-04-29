@@ -16,11 +16,11 @@ if (
     );
 
     $avisC->addAvis($avis);
-    header("Location: showblog.php");
+    header("Location: blogshow.php");
     exit();
 }
 
-// Vérifie qu'on a bien un id_blog dans l'URL
+
 if (!isset($_GET['id_blog'])) {
     echo "Aucun blog sélectionné.";
     exit();
@@ -38,6 +38,17 @@ $id_blog = intval($_GET['id_blog']);
   <title>Ajouter un Avis - Click&Go</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .blog-card {
+      width: 70%;
+      margin: 0 auto;
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transition: all 0.3s ease-in-out;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -48,7 +59,7 @@ $id_blog = intval($_GET['id_blog']);
           <li><a href="index.html">Home</a></li>
           <li><a href="index.html#about">About</a></li>
           <li><a href="index.html#evenements">Événements</a></li>
-          <li><a href="blog.php" class="active">Blog</a></li>
+          <li><a href="blogshow.php" class="active">blog</a></li>
           <li><a href="#">Team</a></li>
           <li class="dropdown"><a href="#">Dropdown ▾</a></li>
           <li><a href="#">Contact</a></li>
@@ -69,7 +80,7 @@ $id_blog = intval($_GET['id_blog']);
           <input type="number" name="note" min="0" max="5" required><br><br>
 
           <label for="commentaire"><strong>Commentaire :</strong></label><br>
-          <textarea name="commentaire" rows="4" cols="50" required></textarea><br><br>
+          <textarea name="commentaire" rows="8" cols="40" required></textarea><br><br>
 
           <label for="date_avis"><strong>Date de l'avis :</strong></label><br>
           <input type="date" name="date_avis" required min="<?= date(format: 'Y-m-d') ?>" max="<?= date('Y-m-d') ?>"><br><br>
