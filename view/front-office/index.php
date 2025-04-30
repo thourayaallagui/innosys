@@ -1,5 +1,14 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
+<?php if (isset($_SESSION['id'])): ?>
+    
+<?php endif; ?>
+
+<?php
 include('../../config.php');
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
   //something was posted

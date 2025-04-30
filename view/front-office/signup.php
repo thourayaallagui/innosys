@@ -1,41 +1,50 @@
 <?php
-session_start();
-include('../../config.php');
-include('../../controller/userC.php');
+require_once __DIR__ . '/../../config.php';
+$db = config::getConnexion();
 
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $nom = $_POST['nom'];
-    $prenom = $_POST['prenom'];
-    $age = $_POST['age'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $type = 'client';
+$success = '';
+$error = '';
 
-    if (!empty($nom) && !empty($prenom) && !empty($age) && !empty($email) && !empty($password) && !empty($type)) {
-        $user = new User($nom, $prenom, $email, $password, $age, $type);
-        $userC = new userC();
-        $userC->create($user);
-        header("Location: login.php");
-        die;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = trim($_POST['nom'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+
+    if ($nom && $prenom && $email && $password) {
+        $stmt = $db->prepare('SELECT COUNT(*) FROM users WHERE email = :email');
+        $stmt->execute(['email' => $email]);
+        if ($stmt->fetchColumn() > 0) {
+            $error = 'Cet email est déjà utilisé.';
+        } else {
+            $stmt = $db->prepare('INSERT INTO users (nom, prenom, email, password, type) VALUES (:nom, :prenom, :email, :password, "user")');
+            $stmt->execute([
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'email' => $email,
+                'password' => $password
+            ]);
+            $success = 'Compte créé avec succès. <a href="login.php">Connectez-vous ici</a>.';
+        }
     } else {
-        $error = "Please fill in all fields";
+        $error = 'Veuillez remplir tous les champs.';
     }
 }
 ?>
 
 <!doctype html>
-<html lang="en">
-
+<html lang="fr">
 <head>
     <meta charset="UTF-8" />
+    <title>Inscription – Mon Site</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Signup</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             background-color: rgb(71, 90, 228);
-            background-image: linear-gradient(0deg, transparent 24%, #000 25%, #000 26%, transparent 27%, transparent 74%, #000 75%, #000 76%, transparent 77%, transparent),
+            background-image: 
+                linear-gradient(0deg, transparent 24%, #000 25%, #000 26%, transparent 27%, transparent 74%, #000 75%, #000 76%, transparent 77%, transparent),
                 linear-gradient(90deg, transparent 24%, #000 25%, #000 26%, transparent 27%, transparent 74%, #000 75%, #000 76%, transparent 77%, transparent);
             background-size: 50px 50px;
             display: flex;
@@ -44,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             height: 100vh;
             font-family: Arial, sans-serif;
         }
-
         .login-box {
             background: white;
             padding: 40px;
@@ -53,29 +61,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-
-        .login-box .icon {
-            font-size: 40px;
-            color: #6a1b9a;
-            margin-bottom: 20px;
-        }
-
         .login-box input {
             width: 100%;
             padding: 10px;
-            margin: 8px 0 0 0;
+            margin: 8px 0;
             border-radius: 8px;
             border: 2px solid black;
             outline: none;
             font-size: 16px;
         }
-
-        .login-box p {
-            margin: 0;
-            font-size: 13px;
-            height: 16px;
-        }
-
         .login-box button {
             width: 100%;
             padding: 10px;
@@ -87,104 +81,108 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             cursor: pointer;
             margin-top: 10px;
         }
-
         .login-box button:hover {
             background: #333;
         }
-
-        .login-box a {
-            display: inline-block;
-            margin-top: 10px;
-            color: #6a1b9a;
+        .login-box .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .login-box .success {
+            color: green;
+            margin-bottom: 15px;
+        }
+        .login-box .rules {
+            text-align: left;
             font-size: 14px;
+            margin: 10px 0;
+        }
+        .login-box .rules .valid {
+            color: green;
+        }
+        .login-box .rules .invalid {
+            color: red;
+        }
+        a {
+            color: #6a1b9a;
             text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
-
 <body>
     <div class="login-box">
-        <div class="icon">👤</div>
+        <div class="icon">📝</div>
+
+        <?php if ($error): ?>
+            <div class="error"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+        <?php if ($success): ?>
+            <div class="success"><?= $success ?></div>
+        <?php endif; ?>
+
         <form method="post" id="formr">
-            <input type="text" name="nom" id="nom" placeholder="Nom" />
-            <p id="nomr"></p>
+            <input type="text" name="nom" placeholder="Nom" required />
+            <input type="text" name="prenom" placeholder="Prénom" required />
+            <input type="email" name="email" placeholder="Email" required />
+            <input type="password" id="password" name="password" placeholder="Mot de passe" required />
 
-            <input type="text" name="prenom" id="prenom" placeholder="Prenom" />
-            <p id="prenomr"></p>
+            <div class="rules">
+                <div id="rule-length" class="invalid">🔴 8 caractères minimum</div>
+                <div id="rule-uppercase" class="invalid">🔴 Une majuscule</div>
+                <div id="rule-lowercase" class="invalid">🔴 Une minuscule</div>
+                <div id="rule-number" class="invalid">🔴 Un chiffre</div>
+            </div>
 
-            <input type="text" name="age" id="age" placeholder="Âge" />
-            <p id="ager"></p>
-
-            <input type="text" name="email" id="email" placeholder="Email" />
-            <p id="emailr"></p>
-
-            <input type="password" name="password" id="password" placeholder="Mot de passe" />
-            <p id="passwordr"></p>
-
-            <button type="submit">Sign up</button>
-            <a href="login.php">Already have an account?</a>
+            <button type="submit">S'inscrire</button>
+            <div style="margin-top:10px;">
+                <a href="login.php">Déjà un compte ? Connexion</a>
+            </div>
         </form>
     </div>
 
     <script>
-        let myform = document.getElementById('formr');
-        myform.addEventListener('submit', function(e) {
-            let nameinput = document.getElementById('nom');
-            let lnameinput = document.getElementById('prenom');
-            let age = document.getElementById('age');
-            let pw = document.getElementById('password');
-            let email = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const ruleLength = document.getElementById('rule-length');
+        const ruleUppercase = document.getElementById('rule-uppercase');
+        const ruleLowercase = document.getElementById('rule-lowercase');
+        const ruleNumber = document.getElementById('rule-number');
 
-            const regex = /^[a-zA-Z-\s]+$/;
+        function checkPasswordRules(value) {
+            const rules = {
+                length: value.length >= 8,
+                uppercase: /[A-Z]/.test(value),
+                lowercase: /[a-z]/.test(value),
+                number: /\d/.test(value)
+            };
 
-            // Reset previous errors
-            ['nomr', 'prenomr', 'ager', 'passwordr', 'emailr'].forEach(id => {
-                document.getElementById(id).innerHTML = '';
-            });
+            ruleLength.className = rules.length ? 'valid' : 'invalid';
+            ruleLength.innerHTML = (rules.length ? '🟢' : '🔴') + ' 8 caractères minimum';
 
-            if (lnameinput.value === '') {
-                document.getElementById('prenomr').innerHTML = "Le champ prénom est vide.";
-                document.getElementById('prenomr').style.color = 'red';
-                e.preventDefault();
-            } else if (!regex.test(lnameinput.value)) {
-                document.getElementById('prenomr').innerHTML = "Le prénom doit contenir uniquement des lettres et tirets.";
-                document.getElementById('prenomr').style.color = 'red';
-                e.preventDefault();
-            }
+            ruleUppercase.className = rules.uppercase ? 'valid' : 'invalid';
+            ruleUppercase.innerHTML = (rules.uppercase ? '🟢' : '🔴') + ' Une majuscule';
 
-            if (nameinput.value === '') {
-                document.getElementById('nomr').innerHTML = "Le champ nom est vide.";
-                document.getElementById('nomr').style.color = 'red';
-                e.preventDefault();
-            } else if (!regex.test(nameinput.value)) {
-                document.getElementById('nomr').innerHTML = "Le nom doit contenir uniquement des lettres et tirets.";
-                document.getElementById('nomr').style.color = 'red';
-                e.preventDefault();
-            }
+            ruleLowercase.className = rules.lowercase ? 'valid' : 'invalid';
+            ruleLowercase.innerHTML = (rules.lowercase ? '🟢' : '🔴') + ' Une minuscule';
 
-            if (pw.value === '') {
-                document.getElementById('passwordr').innerHTML = "Le champ mot de passe est vide.";
-                document.getElementById('passwordr').style.color = 'red';
-                e.preventDefault();
-            }
+            ruleNumber.className = rules.number ? 'valid' : 'invalid';
+            ruleNumber.innerHTML = (rules.number ? '🟢' : '🔴') + ' Un chiffre';
 
-            if (email.value === '') {
-                document.getElementById('emailr').innerHTML = "Le champ email est vide.";
-                document.getElementById('emailr').style.color = 'red';
-                e.preventDefault();
-            }
+            return rules.length && rules.uppercase && rules.lowercase && rules.number;
+        }
 
-            if (age.value === '') {
-                document.getElementById('ager').innerHTML = "Le champ âge est vide.";
-                document.getElementById('ager').style.color = 'red';
-                e.preventDefault();
-            } else if (!(/^[0-9]+$/.test(age.value))) {
-                document.getElementById('ager').innerHTML = "L'âge doit contenir uniquement des chiffres.";
-                document.getElementById('ager').style.color = 'red';
+        passwordInput.addEventListener('input', function () {
+            checkPasswordRules(passwordInput.value);
+        });
+
+        document.getElementById('formr').addEventListener('submit', function (e) {
+            if (!checkPasswordRules(passwordInput.value)) {
+                alert('Le mot de passe ne respecte pas les règles.');
                 e.preventDefault();
             }
         });
     </script>
 </body>
-
 </html>

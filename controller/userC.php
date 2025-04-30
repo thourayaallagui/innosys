@@ -103,4 +103,62 @@ class userC
             }
         }
     }
+    public function login($email, $password)
+{
+    $sql = "SELECT * FROM users WHERE email = :email";
+    $db = config::getConnexion();
+    try {
+        $query = $db->prepare($sql);
+        $query->execute(['email' => $email]);
+        $user = $query->fetch();
+
+        if ($user && $user['password'] === $password) { // compare les mots de passe
+            session_start();
+            $_SESSION['user'] = $user; // garde l'utilisateur connecté
+            header('Location: ../view/front-office/myaccount.php'); // 🔁 redirection ici !
+            exit();
+        } else {
+            echo "Email ou mot de passe incorrect.";
+        }
+    } catch (Exception $e) {
+        die('Erreur: ' . $e->getMessage());
+    }
+}
+public function search($keyword)
+{
+    $sql = "SELECT * FROM users WHERE nom LIKE :keyword OR prenom LIKE :keyword OR email LIKE :keyword OR type LIKE :keyword";
+    $db = config::getConnexion();
+    try {
+        $query = $db->prepare($sql);
+        $query->execute([
+            'keyword' => '%' . $keyword . '%'
+        ]);
+        return $query->fetchAll();
+    } catch (PDOException $e) {
+        die('Erreur: ' . $e->getMessage());
+    }
+}
+public function sortBy($column, $order) {
+    // Sécurité : whitelist des colonnes autorisées
+    $allowedColumns = ['id', 'nom', 'prenom', 'email', 'age', 'type'];
+    $allowedOrder = ['asc', 'desc'];
+
+    if (!in_array($column, $allowedColumns)) {
+        $column = 'id';
+    }
+
+    if (!in_array(strtolower($order), $allowedOrder)) {
+        $order = 'asc';
+    }
+
+    $db = config::getConnexion();
+    try {
+        $query = $db->prepare("SELECT * FROM users ORDER BY $column $order");
+        $query->execute();
+        return $query->fetchAll();
+    } catch (PDOException $e) {
+        die('Erreur : ' . $e->getMessage());
+    }
+}
+
 }
