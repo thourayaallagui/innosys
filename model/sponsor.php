@@ -1,94 +1,33 @@
 <?php
-class Sponsor
-{
-    private ?int $id; // Primary key, auto-increment
-    private ?string $nom; // Name of the sponsor
-    private ?string $mont; // Amount sponsored (varchar(50))
-    private ?string $type; // Type of the sponsor (varchar(50))
-    private ?string $dateA; // Date of sponsorship (date)
-    private ?string $engag; // Engagement description (varchar(50))
 
-    // Constructor
-    public function __construct($id = null, $nom, $mont, $type, $dateA, $engag)
-    {
-        $this->id = $id;
-        $this->nom = $nom;
-        $this->mont = $mont;
-        $this->type = $type;
-        $this->dateA = $dateA;
-        $this->engag = $engag;
+class Sponsor {
+    private $id_sponsor;
+    private $nom_entreprise;
+    private $montant_sponsor;
+    private $type_sponsor;
+    private $date_acceptation;
+    private $engagement;
+
+    public function __construct($nom_entreprise, $montant_sponsor, $type_sponsor, $date_acceptation, $engagement) {
+        $this->nom_entreprise = $nom_entreprise;
+        $this->montant_sponsor = $montant_sponsor;
+        $this->type_sponsor = $type_sponsor;
+        $this->date_acceptation = $date_acceptation;
+        $this->engagement = $engagement;
     }
 
-    // Getter and Setter for id (Primary key, auto-increment)
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    // Getters
+    public function getIdSponsor() { return $this->id_sponsor; }
+    public function getNomEntreprise() { return $this->nom_entreprise; }
+    public function getMontantSponsor() { return $this->montant_sponsor; }
+    public function getTypeSponsor() { return $this->type_sponsor; }
+    public function getDateAcceptation() { return $this->date_acceptation; }
+    public function getEngagement() { return $this->engagement; }
 
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    // Getter and Setter for nom
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): self
-    {
-        $this->nom = $nom;
-        return $this;
-    }
-
-    // Getter and Setter for mont
-    public function getMont(): ?string
-    {
-        return $this->mont;
-    }
-
-    public function setMont(string $mont): self
-    {
-        $this->mont = $mont;
-        return $this;
-    }
-
-    // Getter and Setter for type
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    // Getter and Setter for dateA
-    public function getDateA(): ?string
-    {
-        return $this->dateA;
-    }
-
-    public function setDateA(string $dateA): self
-    {
-        $this->dateA = $dateA;
-        return $this;
-    }
-
-    // Getter and Setter for engag
-    public function getEngag(): ?string
-    {
-        return $this->engag;
-    }
-
-    public function setEngag(string $engag): self
-    {
-        $this->engag = $engag;
-        return $this;
-    }
+    // Setters
+    public function setNomEntreprise($nom_entreprise) { $this->nom_entreprise = $nom_entreprise; }
+    public function setMontantSponsor($montant_sponsor) { $this->montant_sponsor = $montant_sponsor; }
+    public function setTypeSponsor($type_sponsor) { $this->type_sponsor = $type_sponsor; }
+    public function setDateAcceptation($date_acceptation) { $this->date_acceptation = $date_acceptation; }
+    public function setEngagement($engagement) { $this->engagement = $engagement; }
 }
-?>
