@@ -75,15 +75,19 @@ $id_blog = intval($_GET['id_blog']);
       <div class="blog-card">
         <form action="" method="POST" class="form-avis">
           <input type="hidden" name="id_blog" value="<?= htmlspecialchars($id_blog) ?>">
-
           <label for="note"><strong>Note :</strong></label><br>
-          <input type="number" name="note" min="0" max="5" required><br><br>
+<input type="number" name="note" min="0" max="9" required>
+<span id="note_error" style="color:red;"></span><br><br>
 
-          <label for="commentaire"><strong>Commentaire :</strong></label><br>
-          <textarea name="commentaire" rows="8" cols="40" required></textarea><br><br>
+<label for="commentaire"><strong>Commentaire :</strong></label><br>
+<textarea name="commentaire" rows="8" cols="40" required></textarea>
+<span id="commentaire_error" style="color:red;"></span><br><br>
 
-          <label for="date_avis"><strong>Date de l'avis :</strong></label><br>
-          <input type="date" name="date_avis" required min="<?= date(format: 'Y-m-d') ?>" max="<?= date('Y-m-d') ?>"><br><br>
+<label for="date_avis"><strong>Date de l'avis :</strong></label><br>
+<input type="date" id="date_avis" name="date_avis" required 
+       min="<?= date('Y-m-d') ?>" 
+       max="<?= date('Y-m-d') ?>">
+<span id="date_error" style="color:red;"></span><br><br>
 
           <input type="submit" value="Ajouter" class="btn-primary">
         </form>
@@ -92,5 +96,7 @@ $id_blog = intval($_GET['id_blog']);
   </section>
 
   <script src="script.js"></script>
+  <script src="verif.js"></script>
+
 </body>
 </html>

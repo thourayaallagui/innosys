@@ -48,7 +48,19 @@ if (isset($_GET['id_blog'])) {
   <section class="blog-section">
     <div class="container">
       <?php if ($blog): ?>
+        <?php
+$category = strtolower(trim($blog['categorie'])); // ex: "Cinéma" => "cinéma"
+$imageRelativePath = 'ImagesBlogs/' . $category . '.jpg';
+$imageAbsolutePath = __DIR__ . '/ImagesBlogs/' . $category . '.jpg';
+
+if (!file_exists($imageAbsolutePath)) {
+    $imageRelativePath = 'ImagesBlogs/default.jpg'; // image par défaut si l’image spécifique n’existe pas
+}
+
+?>
         <div class="blog-card">
+        <img src="<?= $imageRelativePath ?>" alt="Image pour <?= htmlspecialchars($blog['categorie']) ?>" style="width:100%; max-height:250px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+
           <h2 class="section-title">Blog </h2>
           <p><strong>Titre :</strong> <?= htmlspecialchars($blog['titre']) ?></p>
           <p><strong>Contenu :</strong> <?= htmlspecialchars(substr($blog['contenu'], 0, 150)) ?>...</p>
