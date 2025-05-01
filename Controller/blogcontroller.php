@@ -36,6 +36,7 @@ class BlogController
         } catch (Exception $e) {
             die('Error: ' . $e->getMessage());
         }
+        
     }public function listBlogstri($order = null, $category = null, $sortByNote = false)
     {
         require_once __DIR__ . '/../Model/Blog.php'; // Charge le modèle Blog
@@ -61,7 +62,14 @@ class BlogController
         return $blogs;
     }
     
-
+    public function getNombreBlogsParCategorie() {
+        $sql = "SELECT categorie, COUNT(*) as total FROM blog GROUP BY categorie";
+        $stmt = $this->db->prepare($sql); // ← ici !
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    
     
     public function addBlog($blog)
     {
