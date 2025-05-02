@@ -2,9 +2,11 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
+require_once '../../config.php';
 require_once __DIR__ . '/../../Controller/BlogController.php';
 require_once __DIR__ . '/../../Controller/AvisController.php'; 
+$pdo = config::getConnexion();
+
 $blogController = new BlogController();
 $avisController = new AvisController();
 $order = isset($_GET['sort']) ? $_GET['sort'] : null;
@@ -16,6 +18,27 @@ $statsCategorie = $blogController->getNombreBlogsParCategorie();
 foreach ($list as $index => $blog) {
     $list[$index]['moyenne_note'] = $avisController->calculerMoyenneParBlog($blog['id_blog']);
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($newBlog)) {
+  if ($blogController->addBlog($newBlog)) {
+      header("Location: blogshow.php?notif=blog_ajoute");
+      exit;
+  } else {
+      echo "<script>alert('Erreur lors de l\'ajout du blog.');</script>";
+  }
+}
+session_start();
+
+// Définir l’intervalle (par exemple : les dernières 24h)
+$interval = date('Y-m-d H:i:s', strtotime('-24 hours'));
+
+// Requête pour compter les blogs publiés dans les dernières 24h
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM blog WHERE date_publication >= ?");
+$stmt->execute([$interval]);
+$newBlogCount = $stmt->fetchColumn();
+// Récupérer les blogs publiés dans les dernières 24h
+$stmtTitles = $pdo->prepare("SELECT id_blog, titre FROM blog WHERE date_publication >= ?");
+$stmtTitles->execute([$interval]);
+$newBlogs = $stmtTitles->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -44,10 +67,79 @@ foreach ($list as $index => $blog) {
           <li><a href="#">Contact</a></li>
         </ul>
       </nav>
-      <a href="#" class="btn-primary">Get Started</a>
+      <div style="position: relative; margin-left: 20px;">
+  <i class="fas fa-bell" style="font-size: 24px; color: #00cfff; cursor: pointer;" id="notificationBell"></i>
+  <span id="notificationCount" style="
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 6px;
+    font-size: 12px;
+    display: <?= ($newBlogCount > 0) ? 'inline-block' : 'none' ?>;
+  "><?= $newBlogCount ?></span>
+
+  <!-- Notifications box (cachée au début) -->
+  <div id="notificationBox" style="
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: -10px;
+    width: 300px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 1000;
+    padding: 10px;
+  ">
+    <h4 style="margin-top: 0;">Nouveaux blogs</h4>
+    <ul style="padding-left: 20px;">
+<?php
+if (!empty($newBlogs)) {
+    foreach ($newBlogs as $blog) {
+        $id = htmlspecialchars($blog['id_blog']);
+        $titre = htmlspecialchars($blog['titre']);
+        echo "<li style='margin-bottom: 5px;'>📝 <a href='visualiser_blog.php?id_blog=$id'>$titre</a></li>";
+    }
+} else {
+    echo "<li>Aucun nouveau blog</li>";
+}
+?>
+</ul>
+
+  </div>
+</div>
+
     </div>
   </header>
-  
+
+  <script>
+// Demander la permission d'afficher des notifications au chargement
+document.addEventListener("DOMContentLoaded", function () {
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+
+    // Exemple simple : détecter via paramètre d'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('notif') === 'blog_ajoute') {
+        showNotification("Nouveau blog ajouté", "Un nouvel article a été publié avec succès !");
+    }
+});
+
+function showNotification(title, message) {
+    if (Notification.permission === "granted") {
+        new Notification(title, {
+            body: message,
+            icon: "icons/blog.png" // optionnel, ajoute une icône
+        });
+    }
+}
+</script>
+
   <style>
     /* Styles pour le formulaire de tri */
     .sort-form {
@@ -259,7 +351,10 @@ Découvrir les stats des blogs par catégorie 📊
                 <?= isset($blog['contenu']) ? htmlspecialchars(substr($blog['contenu'], 0, 100)) . '...' : '<em>Non défini</em>' ?>
               </p>
               <p><strong>Catégorie :</strong> <?= htmlspecialchars($blog['categorie'] ?? 'Non défini') ?></p>
-              <p><strong>Date de publication :</strong> <?= htmlspecialchars($blog['date_publication']) ?></p>
+              <p><strong>Date de publication :</strong> 
+    <?= htmlspecialchars(date('Y-m-d', strtotime($blog['date_publication']))) ?>
+</p>
+
 
               <!-- Affichage moyenne des notes -->
               <?php if (isset($blog['moyenne_note']) && $blog['moyenne_note'] !== null): ?>
@@ -300,5 +395,31 @@ Découvrir les stats des blogs par catégorie 📊
   </section>
 
   <script src="script.js"></script>
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const bell = document.getElementById("notificationBell");
+    const box = document.getElementById("notificationBox");
+    const badge = document.getElementById("notificationCount");
+
+    bell.addEventListener("click", function (e) {
+        e.stopPropagation(); // Empêche la fermeture immédiate
+        box.style.display = box.style.display === "none" ? "block" : "none";
+        if (badge) badge.style.display = "none"; // Masquer le badge au clic
+    });
+
+    // Clique en dehors de la boîte : la fermer
+    document.addEventListener("click", function () {
+        box.style.display = "none";
+    });
+
+    // Empêche fermeture si on clique dans la boîte
+    box.addEventListener("click", function (e) {
+        e.stopPropagation();
+    });
+});
+</script>
+
+
+
 </body>
 </html>

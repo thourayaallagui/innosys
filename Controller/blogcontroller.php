@@ -68,28 +68,46 @@ class BlogController
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getNewBlogsJson() {
+        include_once 'config.php'; // ou ton fichier de connexion PDO
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
+            $sql = "SELECT * FROM blog WHERE date_publication >= NOW() - INTERVAL 1 DAY";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute();
+    
+            $newBlogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($newBlogs);
+        } catch (PDOException $e) {
+            echo json_encode(["error" => $e->getMessage()]);
+        }
+    }
     
     
     public function addBlog($blog)
-    {
-        $sql = "INSERT INTO blog (titre, contenu, date_publication, categorie) 
-                VALUES (:titre, :contenu, :date_publication, :categorie)";
+{
+    $sql = "INSERT INTO blog (titre, contenu, date_publication, categorie) 
+            VALUES (:titre, :contenu, :date_publication, :categorie)";
 
-try {
-    $query = $this->db->prepare($sql);
+    try {
+        $query = $this->db->prepare($sql);
+        $query->execute([
+            'titre' => $blog->getTitre(),
+            'contenu' => $blog->getContenu(),
+            'date_publication' => $blog->getDatePublication()->format('Y-m-d'),
+            'categorie' => $blog->getCategorie()
+        ]);
 
+        // Ajout réussi, renvoie une valeur de succès
+        return true;
 
-            $query->execute([
-                'titre' => $blog->getTitre(),
-                'contenu' => $blog->getContenu(),
-                'date_publication' => $blog->getDatePublication()->format('Y-m-d'),
-                'categorie' => $blog->getCategorie()
-            ]);
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    } catch (Exception $e) {
+        error_log('Erreur ajout blog: ' . $e->getMessage());
+        return false;
     }
+}
 
     
     

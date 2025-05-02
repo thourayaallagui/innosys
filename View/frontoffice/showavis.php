@@ -65,7 +65,9 @@ if (!file_exists($imageAbsolutePath)) {
           <p><strong>Titre :</strong> <?= htmlspecialchars($blog['titre']) ?></p>
           <p><strong>Contenu :</strong> <?= htmlspecialchars(substr($blog['contenu'], 0, 150)) ?>...</p>
           <p><strong>Catégorie :</strong> <?= htmlspecialchars($blog['categorie']) ?></p>
-          <p><strong>Date de publication :</strong> <?= htmlspecialchars($blog['date_publication']) ?></p>
+          <p><strong>Date de publication :</strong> 
+    <?= htmlspecialchars(date('Y-m-d', strtotime($blog['date_publication']))) ?>
+</p>
           <?php if ($moyenneNote !== null): ?>
   <p><strong>Moyenne des notes :</strong> <?= round($moyenneNote, 2) ?>/5</p>
   <p>
