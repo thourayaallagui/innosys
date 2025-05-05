@@ -7,12 +7,23 @@ $ReclamtionC = new ReclamationC();
 $ReponseC = new ReponseC();
 $ReponseC->delete();
 $Reclamtions = $ReclamtionC->read(); // Fetch all Reclamtions
+$ReclamationC = new ReclamationC();
+$statut = isset($_GET['statut']) ? $_GET['statut'] : '';
+$reclamations = $ReclamationC->findByStatut($statut);
+
+$reclamationC = new ReclamationC();
+
+$statistiques = $reclamationC->getStatistiquesParStatut();
+
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Click&Go</title>
   <meta
@@ -43,6 +54,12 @@ $Reclamtions = $ReclamtionC->read(); // Fetch all Reclamtions
         sessionStorage.fonts = true;
       },
     });
+
+
+    
+
+    
+   
   </script>
 
   <!-- CSS Files -->
@@ -99,8 +116,6 @@ $Reclamtions = $ReclamtionC->read(); // Fetch all Reclamtions
               </a>
 
             </li>
-
-
 
           </ul>
         </div>
@@ -232,18 +247,19 @@ $Reclamtions = $ReclamtionC->read(); // Fetch all Reclamtions
         <!-- End Navbar -->
       </div>
 
+     
+
       <div class="container">
         <div class="page-inner">
           <div class="row">
             <br>
-            <h1 class="mt-5">Gerer les reclamations</h1>
+        <h1 class="mt-5">Gerer les reclamations</h1>
             <br><br>
+            
             <div class="mt-5">
               <div class="row">
                 <div class="col-6">
-                  <form action="?search" method="get">
-                    <input type="text" class=" form-control" placeholder="Chercher .. " name="search">
-                  </form>
+                  
                 </div>
               </div>
             </div>
@@ -276,12 +292,181 @@ $Reclamtions = $ReclamtionC->read(); // Fetch all Reclamtions
                       <?php if ($rec['statut'] == 'Résolue') { ?>
                         <a class="btn btn-sm btn-success" href="respondRec.php?id=<?= $rec['id_reclamation'] ?>">Modifier reponse</a>
                         <a class="btn btn-sm btn-danger" href="?delete=<?= $rec['id_reclamation'] ?>">Supprimer reponse</a>
+
                       <?php } ?>
                     </td>
                   </tr>
                 <?php } ?>
               </tbody>
             </table>
+
+          
+
+<?php
+
+$reclamationC = new ReclamationC();
+
+if (isset($_GET['statut']) && !empty($_GET['statut'])) {
+    $Reclamtions = $reclamationC->findByStatut($_GET['statut']);
+} else {
+    $Reclamtions = $reclamationC->read();
+}
+?>
+
+<!-- Barre de recherche par statut -->
+<form method="GET" class="mt-3">
+  <div class="row">
+    <div class="col-4">
+      <select name="statut" class="form-control">
+        <option value=""> tous </option>
+        <option value="En cours" <?= (isset($_GET['statut']) && $_GET['statut'] == 'En cours') ? 'selected' : '' ?>>En cours</option>
+        <option value="En attente" <?= (isset($_GET['statut']) && $_GET['statut'] == 'En attente') ? 'selected' : '' ?>>En attente</option>
+        <option value="Résolue" <?= (isset($_GET['statut']) && $_GET['statut'] == 'Résolue') ? 'selected' : '' ?>>Résolue</option>
+      </select>
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary">Rechercher</button>
+    </div>
+  </div>
+</form>
+
+
+
+<!-- Tableau des réclamations -->
+<table class="table mt-5">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Objet</th>
+      <th scope="col">Date</th>
+      <th scope="col">Statut</th>
+      <th scope="col">Réponse</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach ($Reclamtions as $rec) { ?>
+      <tr>
+        <th scope="row"><?= $rec['id_reclamation'] ?></th>
+        <td><?= htmlspecialchars($rec['objet']) ?></td>
+        <td><?= $rec['date_creation'] ?></td>
+        <td><?= $rec['statut'] ?></td>
+        <td>
+          <?= !empty($rec['reponse_message']) ? htmlspecialchars($rec['reponse_message']) : '<span class="text-muted">Aucune</span>' ?>
+        </td>
+      </tr>
+    <?php } ?>
+  </tbody>
+</table>
+
+
+
+
+<?php
+
+$reclamationC = new ReclamationC();
+
+$order = isset($_GET['order']) && in_array($_GET['order'], ['ASC', 'DESC']) ? $_GET['order'] : 'ASC';
+$Reclamtions = $reclamationC->readSortedByDate($order);
+?>
+
+<form method="GET" class="mt-3">
+  <div class="row">
+    <div class="col-4">
+      <select name="order" class="form-control">
+        <option value="">Trier par date</option>
+        <option value="ASC" <?= (isset($_GET['order']) && $_GET['order'] == 'ASC') ? 'selected' : '' ?>>Date croissante</option>
+        <option value="DESC" <?= (isset($_GET['order']) && $_GET['order'] == 'DESC') ? 'selected' : '' ?>>Date décroissante</option>
+      </select>
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-info">Trier</button>
+    </div>
+  </div>
+</form>
+
+<?php if (!empty($Reclamtions)) { ?>
+  <table class="table mt-5">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Objet</th>
+        <th>Date</th>
+        <th>Statut</th>
+        <th>Réponse</th>
+      
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($Reclamtions as $rec) { ?>
+        <tr>
+          <td><?= $rec['id_reclamation'] ?></td>
+          <td><?= htmlspecialchars($rec['objet']) ?></td>
+          <td><?= $rec['date_creation'] ?></td>
+          <td><?= $rec['statut'] ?></td>
+          <td><?= !empty($rec['reponse_message']) ? htmlspecialchars($rec['reponse_message']) : 'Aucune' ?></td>
+          <td><!-- Actions ici --></td>
+        </tr>
+      <?php } ?>
+    </tbody>
+  </table>
+<?php } else { ?>
+  <p class="mt-4 text-muted">Aucune réclamation trouvée.</p>
+<?php } ?>
+
+
+<h3 class="mt-5">Répartition des réclamations par statut</h3>
+<canvas id="statutPieChart" style="max-width: 350px; max-height: 350px;"></canvas>
+
+
+<script>
+  const ctx = document.getElementById('statutPieChart').getContext('2d');
+
+  const data = {
+    labels: <?= json_encode(array_column($statistiques, 'statut')) ?>,
+    datasets: [{
+      label: 'Réclamations',
+      data: <?= json_encode(array_column($statistiques, 'total')) ?>,
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.6)',
+        'rgba(255, 206, 86, 0.6)',
+        'rgba(75, 192, 192, 0.6)'
+      ],
+      borderColor: [
+        'rgba(255, 99, 132, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)'
+      ],
+      borderWidth: 1
+    }]
+  };
+
+  const config = {
+    type: 'pie',
+    data: data,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          
+        }
+      }
+    },
+  };
+
+  new Chart(ctx, config);
+</script>
+
+
+
+
+
+             </tbody>
+           </table>
           </div>
         </div>
       </div>

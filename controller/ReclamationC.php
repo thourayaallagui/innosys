@@ -2,8 +2,10 @@
 require_once('C:/xampp/htdocs/greclamation/config.php');
 include 'C:/xampp/htdocs/greclamation/model/Reclamation.php';
 
+
 class ReclamationC
 {
+
     public function create($reclamation)
     {
         $sql = "INSERT INTO `reclamation`(`date_creation`, `objet`, `statut`, `user_id`)
@@ -95,4 +97,70 @@ class ReclamationC
             die('Erreur:' . $e->getMessage());
         }
     }
+
+
+
+    public function findByStatut($statut)
+{
+    $sql = "SELECT r.*, rp.message AS reponse_message
+            FROM reclamation r
+            LEFT JOIN (
+                SELECT id_reclamation, message
+                FROM reponse
+                ORDER BY date_reponse DESC
+            ) rp ON r.id_reclamation = rp.id_reclamation
+            WHERE r.statut = :statut";
+    $db = config::getConnexion();
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':statut', $statut, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    } catch (Exception $e) {
+        die('Erreur:' . $e->getMessage());
+    }
 }
+
+
+
+public function readSortedByDate($order = 'ASC')
+{
+    $sql = "SELECT r.*, rp.message AS reponse_message
+            FROM reclamation r
+            LEFT JOIN (
+                SELECT id_reclamation, message
+                FROM reponse
+                ORDER BY date_reponse DESC
+            ) rp ON r.id_reclamation = rp.id_reclamation
+            ORDER BY r.date_creation $order"; // tri dynamique
+
+    $db = config::getConnexion();
+    try {
+        return $db->query($sql);
+    } catch (Exception $e) {
+        die('Erreur:' . $e->getMessage());
+    }
+}
+
+
+public function getStatistiquesParStatut()
+{
+    $sql = "SELECT statut, COUNT(*) AS total FROM reclamation GROUP BY statut";
+    $db = config::getConnexion();
+    try {
+        $result = $db->query($sql);
+        return $result->fetchAll();
+    } catch (Exception $e) {
+        die('Erreur: ' . $e->getMessage());
+    }
+}
+
+
+}
+
+
+
+
+
+    
+
