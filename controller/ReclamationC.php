@@ -2,7 +2,9 @@
 require_once('C:/xampp/htdocs/greclamation/config.php');
 include 'C:/xampp/htdocs/greclamation/model/Reclamation.php';
 
-
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'vendor/autoload.php';
 class ReclamationC
 {
 
@@ -75,15 +77,65 @@ class ReclamationC
             }
         }
     }
+    
+    
 
     public function updateStatut($id, $statut)
     {
         $conn = config::getConnexion();
+    
+        
         $sql = "UPDATE reclamation SET statut = :statut WHERE id_reclamation = :id";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':statut', $statut, PDO::PARAM_STR);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $result = $stmt->execute();
+        if ($result && strtolower($statut) === 'résolue') {
+    
+            $query = "SELECT u.email FROM users u
+                      JOIN reclamation r ON u.id = r.user_id
+                      WHERE r.id_reclamation = :id";
+            $stmtUser = $conn->prepare($query);
+            $stmtUser->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmtUser->execute();
+            $email = $stmtUser->fetchColumn();
+            if ($email) {
+                
+                $mail = new PHPMailer(true);
+                try {
+                    $mail->isSMTP();
+                    $mail->Host = 'smtp.gmail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = 'thourayallagui@gmail.com'; // Ton email 
+                    $mail->Password = 'yrvq duzl vvgh ssju';   // Mot de passe d'application
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port = 587;
+                    $mail->SMTPOptions = [
+                        'ssl' => [
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                            'allow_self_signed' => true
+                        ]
+                    ];
+                    $mail->setFrom('thourayallagui@gmail.com', 'Votre plateforme');
+                    $mail->addAddress($email);
+    
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Reclamation resolue';
+                    $mail->Body = "
+                        Bonjour,<br><br>
+                        Votre réclamation  a été marquée comme <b>Résolue</b>.<br><br>
+                        Merci de nous avoir contactés.<br><br>
+                        Cordialement,<br>L'équipe Votre plateforme.";
+                        $mail->send();
+                    
+                } catch (Exception $e) {
+                    error_log("Erreur d'envoi du mail : " . $mail->ErrorInfo);
+                }
+            }
+        }
+    
+        return $result;
     }
 
     public function findone($id)

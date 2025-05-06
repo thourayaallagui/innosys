@@ -9,10 +9,9 @@ $ReponseC->delete();
 $Reclamtions = $ReclamtionC->read(); // Fetch all Reclamtions
 $ReclamationC = new ReclamationC();
 $statut = isset($_GET['statut']) ? $_GET['statut'] : '';
+
 $reclamations = $ReclamationC->findByStatut($statut);
-
 $reclamationC = new ReclamationC();
-
 $statistiques = $reclamationC->getStatistiquesParStatut();
 
 ?>

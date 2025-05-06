@@ -4,7 +4,7 @@ include('../../controller/ReclamationC.php');
 
 $ReclamtionC = new ReclamationC();
 $ReclamtionC->delete();
-$Reclamtions = $ReclamtionC->read(); // Fetch all Reclamtions
+$Reclamtions = $ReclamtionC->read(); 
 ?>
 
 <!DOCTYPE html>
