@@ -85,4 +85,49 @@ class EvenementC
             die('Erreur:' . $e->getMessage());
         }
     }
+
+    public function search($r)
+    {
+        $sql = "SELECT * FROM evenement where id like '%$r%' or nom like '%$r%' or description like '%$r%'";
+        $db = config::getConnexion();
+        try {
+            $liste = $db->query($sql);
+            return $liste;
+        } catch (Exception $e) {
+            die('Erreur:' . $e->getMessage());
+        }
+    }
+
+    public function sort($r)
+    {
+        $sql = "SELECT * FROM evenement order by $r";
+        $db = config::getConnexion();
+        try {
+            $liste = $db->query($sql);
+            return $liste;
+        } catch (Exception $e) {
+            die('Erreur:' . $e->getMessage());
+        }
+    }
+
+    public function getTop3Evenements()
+    {
+        $sql = "SELECT e.id, e.nom, e.organisateur, e.date, e.place, COUNT(r.id) AS nombre_reservations
+                FROM evenement e
+                LEFT JOIN reservation r ON e.id = r.event_id
+                GROUP BY e.id
+                ORDER BY nombre_reservations DESC
+                LIMIT 3";
+
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute();
+            return $query->fetchAll();
+        } catch (Exception $e) {
+            echo 'Erreur: ' . $e->getMessage();
+            return [];
+        }
+    }
+    
 }
