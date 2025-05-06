@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 require_once '../../config.php';
 require_once __DIR__ . '/../../Controller/BlogController.php';
 require_once __DIR__ . '/../../Controller/AvisController.php'; 
+
 $pdo = config::getConnexion();
 
 $blogController = new BlogController();
@@ -53,6 +54,12 @@ $newBlogs = $stmtTitles->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" 
+  src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v18.0" 
+  nonce="FbNonce123">
+</script>
+
   <header>
     <div class="container nav-bar">
       <h1 class="logo">Click&Go</h1>
@@ -379,12 +386,29 @@ Découvrir les stats des blogs par catégorie 📊
               <?php else: ?>
                 <p><strong>Moyenne des notes :</strong> Aucun avis pour le moment</p>
               <?php endif; ?>
-
-              <!-- Boutons -->
               <div class="blog-buttons">
-                <a href="addavis.php?id_blog=<?= urlencode($blog['id_blog']) ?>" class="btn-primary">Ajouter un avis</a>
-                <a href="showavis.php?id_blog=<?= urlencode($blog['id_blog']) ?>" class="btn-primary">Afficher les avis</a>
-              </div>
+    <a href="addavis.php?id_blog=<?= urlencode($blog['id_blog']) ?>" class="btn-primary">Ajouter un avis</a>
+    <a href="showavis.php?id_blog=<?= urlencode($blog['id_blog']) ?>" class="btn-primary">Afficher les avis</a>
+
+    <?php
+$id_blog = $blog['id_blog'];
+$url = "https://monprojet.000webhostapp.com/projetWeb/view/frontoffice/visualiser_blog.php?id_blog=" . $id_blog;
+?>
+
+<a href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode($url) ?>" 
+   target="_blank"
+   onclick="window.open(this.href, 'Partager', 'width=600,height=400'); return false;"
+   class="btn-primary">
+   <img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook" style="vertical-align: middle; margin-right: 5px;">
+   Partager sur Facebook
+</a>
+
+
+</div>
+
+
+
+
             </div>
           <?php endforeach; ?>
         <?php else: ?>
@@ -422,4 +446,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 </body>
+<!-- SDK JavaScript de Facebook -->
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" 
+        src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v15.0" 
+        nonce="Yk7g7CZf">
+</script>
+
 </html>
