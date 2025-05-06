@@ -28,6 +28,10 @@ if ($forumId) {
                     <a href="updatecom.php?id_com=<?= htmlspecialchars($commentaire['id_com']) ?>" class="edit">Modifier</a>
                     <a href="deletecom.php?id_com=<?= htmlspecialchars($commentaire['id_com']) ?>" class="delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">Supprimer</a>
                     <button type="button" class="btn btn-green" onclick="toggleCommentaire('commentaire-<?= $commentaire['id_com'] ?>')">Réponses</button>
+                    <form action="likecom.php" method="POST" class="like-form" style="display:inline;">
+  <input type="hidden" name="id_com" value="<?=  $commentaire['id_com'] ?>">
+  <button type="submit" class="btn-like">❤️ Like (<?= $commentaire['likes2'] ?>)</button>
+</form>
                 </div>
 
                 <!-- Bloc de réponses lié à ce commentaire -->

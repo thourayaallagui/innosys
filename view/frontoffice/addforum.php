@@ -14,11 +14,36 @@ if (isset($_POST['titre'], $_POST['contenu'])) {
     );
 
     // Appel à la fonction d'ajout
-    $forumC->addForum($forum);
+   
+    $success = false;
+    if (isset($_POST['titre'], $_POST['contenu'])) {
+        $forum = new Forum(
+            $_POST['titre'],
+            $_POST['contenu'],
+            new DateTime(),
+            null,
+            0  
+        );
+        $forumC->addForum($forum);
+        $success = true;
 
-    echo "Le sujet de forum a été ajouté avec succès!";
-    header("Location: showforum.php");
-    exit(); // 
+
+    }
+   // addforum.php
+if ($ajoutReussi) {
+    header("Location: showforum.php?success=1");
+    exit;
+} else {
+  $titre = isset($_POST['titre']) ? $_POST['titre'] : '';
+  header("Location: showforum.php?success=1&titre=" . urlencode($titre));
+  exit;
+  
+    exit;
+}
+
+    exit();
+    
+    
 }
 ?>
 <!DOCTYPE html>
@@ -33,7 +58,7 @@ if (isset($_POST['titre'], $_POST['contenu'])) {
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body>
+<body >
 <script src="js/verfier.js"></script>
 
   <header>
@@ -194,7 +219,30 @@ if (isset($_POST['titre'], $_POST['contenu'])) {
 </div>
   </section>
 
-  
-  
-</body>
+  <script src="js/notification.js"></script>
+  <!-- Notification toast -->
+<div id="toast"></div>
+<script>
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3000);
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const forumTitre = document.body.dataset.forumTitre;
+    if (forumTitre) {
+      showToast(`✅ Forum "${forumTitre}" ajouté avec succès !`);
+    }
+  });
+</script>
+
+
+<body >
+
+
 </html> 

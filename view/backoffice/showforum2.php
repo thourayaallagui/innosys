@@ -75,7 +75,7 @@ if (!empty($search)) {
       <label for="sort_by">Trier par :</label>
       <select name="sort_by" id="sort_by" style="padding: 5px;">
         <option value="date_creation" <?= $sortBy === 'date_creation' ? 'selected' : '' ?>>Date de création</option>
-        <option value="likes" <?= $sortBy === 'likes' ? 'selected' : '' ?>>Nombre de likes</option>
+        <option value="likes" <?= $sortBy === 'likes' ? 'selected' : '' ?>>Nombre de likes❤️</option>
         <option value="titre" <?= $sortBy === 'titre' ? 'selected' : '' ?>>Titre</option>
       </select>
       <input type="hidden" name="sort_order" value="<?= $newSortOrder ?>">
@@ -92,7 +92,7 @@ if (!empty($search)) {
             <th style="padding: 12px; border: 1px solid #ddd;">Titre</th>
             <th style="padding: 12px; border: 1px solid #ddd;">Contenu</th>
             <th style="padding: 12px; border: 1px solid #ddd;">Date de création</th>
-            <th style="padding: 12px; border: 1px solid #ddd;">Likes</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Likes </th>
             <th style="padding: 12px; border: 1px solid #ddd;">Commentaires</th>
             <th style="padding: 12px; border: 1px solid #ddd;">Réponses</th>
           </tr>

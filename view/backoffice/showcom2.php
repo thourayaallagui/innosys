@@ -24,6 +24,7 @@ if ($forumId) {
             <div class="commentaire-card">
                 <p><?= htmlspecialchars($commentaire['contenu']) ?></p>
                 <small>Posté le <?= date('d/m/Y H:i', strtotime($commentaire['date_creation'])) ?></small>
+                <span>❤️ <?= $commentaire['likes2'] ?? 0 ?> likes<?= ($commentaire['likes2'] ?? 0) > 1 ? 's' : '' ?></span>
                
         <?php endforeach; ?>
     <?php else : ?>

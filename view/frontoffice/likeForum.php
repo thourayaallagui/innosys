@@ -23,9 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['forum_id'])) {
         } catch (Exception $e) {
             die('Error: ' . $e->getMessage());
         }
-
+        $titre = $forum['titre'];
         // Rediriger vers la page du forum avec un message de succès
-        header("Location: showforum.php");
+        header("Location: showforum.php?liked=1&titre=" . urlencode($titre));
         exit();
     }
 } else {
