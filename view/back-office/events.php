@@ -3,8 +3,18 @@
 include('../../controller/evenementC.php');
 
 $eventC = new EvenementC();
-$events = $eventC->read();
+if (isset($_GET['search'])) {
+  $eventC = new EvenementC();
+  $events = $eventC->search($_GET['search']);
+} else if (isset($_GET['sort'])) {
+  $eventC = new EvenementC();
+  $events = $eventC->sort($_GET['sort']);
+} else {
+  $eventC = new EvenementC();
+  $events = $eventC->read();
+}
 $eventC->delete(); // Handle deletion
+$tevents= $eventC->getTop3Evenements();
 ?>
 
 <!DOCTYPE html>
@@ -258,13 +268,13 @@ $eventC->delete(); // Handle deletion
             <table class="table mt-5">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Nom</th>
+                  <th scope="col"><a href="?sort=id">#</a></th>
+                  <th scope="col"><a href="?sort=nom">Nom</a></th>
                   <th scope="col">Organisateur</th>
                   <th scope="col">Description</th>
                   <th scope="col">Type</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Lieu</th>
+                  <th scope="col"><a href="?sort=date">Date</a></th>
+                  <th scope="col"><a href="?sort=place">Lieu</a></th>
                   <th scope="col">Option</th>
                 </tr>
               </thead>
@@ -286,6 +296,32 @@ $eventC->delete(); // Handle deletion
                 <?php } ?>
               </tbody>
             </table>
+            <h2>Top 3 des Événements les Plus Réservés</h2>
+              <table>
+                  <thead>
+                      <tr>
+                          <th>Nom</th>
+                          <th>Organisateur</th>
+                          <th>Date</th>
+                          <th>Lieu</th>
+                          <th>Nombre de Réservations</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <?php
+                      foreach ($tevents as $event) {
+                          echo "<tr>";
+                          echo "<td>" . htmlspecialchars($event['nom']) . "</td>";
+                          echo "<td>" . htmlspecialchars($event['organisateur']) . "</td>";
+                          echo "<td>" . htmlspecialchars($event['date']) . "</td>";
+                          echo "<td>" . htmlspecialchars($event['place']) . "</td>";
+                          echo "<td>" . $event['nombre_reservations'] . "</td>";
+                          echo "</tr>";
+                      }
+                      ?>
+                  </tbody>
+              </table>
+
           </div>
         </div>
       </div>
