@@ -9,10 +9,16 @@ $ReponseC->delete();
 $Reclamtions = $ReclamtionC->read(); // Fetch all Reclamtions
 $ReclamationC = new ReclamationC();
 $statut = isset($_GET['statut']) ? $_GET['statut'] : '';
-
 $reclamations = $ReclamationC->findByStatut($statut);
 $reclamationC = new ReclamationC();
 $statistiques = $reclamationC->getStatistiquesParStatut();
+
+
+
+
+
+$reclamationsEnAttente = $ReclamtionC->findByStatut('en attente');
+$nombreEnAttente = count($reclamationsEnAttente);
 
 ?>
 
@@ -460,6 +466,44 @@ $Reclamtions = $reclamationC->readSortedByDate($order);
   new Chart(ctx, config);
 </script>
 
+
+
+<?php if ($nombreEnAttente > 0): ?>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toast = document.createElement('div');
+      toast.style.position = 'fixed';
+      toast.style.bottom = '20px';
+      toast.style.right = '20px';
+      toast.style.backgroundColor = '#fff3cd';
+      toast.style.color = '#856404';
+      toast.style.padding = '15px 20px';
+      toast.style.borderRadius = '8px';
+      toast.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+      toast.style.borderLeft = '6px solid #ffc107';
+      toast.style.fontFamily = 'Arial, sans-serif';
+      toast.style.zIndex = '9999';
+      toast.style.minWidth = '300px';
+      toast.style.transition = 'opacity 0.4s ease';
+      toast.style.opacity = '0';
+
+      toast.innerHTML = `
+        <strong>Réclamations en attente</strong><br>
+        Vous avez <strong><?= $nombreEnAttente ?></strong> réclamation(s) à traiter.
+        <span style="float: right; cursor: pointer;" onclick="this.parentElement.remove()">&times;</span>
+      `;
+
+      document.body.appendChild(toast);
+      setTimeout(() => toast.style.opacity = '1', 100);
+
+      // Auto-disparition après 5 secondes
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 1000);
+      }, 5000);
+    });
+  </script>
+<?php endif; ?>
 
 
 
