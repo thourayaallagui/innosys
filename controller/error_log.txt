@@ -1,0 +1,1 @@
+[07-May-2025 10:22:33 Europe/Berlin] PHP Warning:  file_put_contents(log.txt): Failed to open stream: Permission denied in C:\xampp\htdocs\gresclamation\controller\notifier.php on line 32
