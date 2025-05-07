@@ -1,15 +1,12 @@
-<?php
+<?php 
 session_start();
 if (!isset($_SESSION['id'])) {
   header("Location:login.php");
   exit;
 }
 
-
 if (isset($_GET['logout'])) {
-  // Destroy the session
   session_destroy();
-  // Redirect to the login page
   header("Location: login.php");
   exit;
 }
@@ -17,7 +14,6 @@ if (isset($_GET['logout'])) {
 include('../../controller/userC.php');
 
 $error = "";
-
 $userC = new userC();
 $user = $userC->findone($_SESSION['id']);
 
@@ -48,94 +44,122 @@ if (
     $userC->update($user, $_SESSION['id']);
     header('Location:index.php');
   } else
-    $error = "Missing information";
+    $error = "Informations manquantes";
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>My Account</title>
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/css/main.css" rel="stylesheet">
+  <title>Mon Compte</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e0f7fa;
+      color: #333;
+    }
+    .card {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .form-control:focus {
+      border-color: #00bcd4;
+      box-shadow: 0 0 0 0.2rem rgba(0,188,212,.25);
+    }
+    .btn-primary {
+      background-color: #00bcd4;
+      border-color: #00bcd4;
+    }
+    .btn-primary:hover {
+      background-color: #0097a7;
+      border-color: #0097a7;
+    }
+    .form-label {
+      font-weight: 500;
+    }
+    .form-icon {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      color: #00bcd4;
+    }
+    .form-group {
+      position: relative;
+    }
+    .form-control {
+      padding-left: 40px;
+    }
+  </style>
 </head>
 
-<body class="index-page">
+<body>
 
-  <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
-      <a href="index.php" class="logo d-flex align-items-center me-auto">
-        <h1 class="sitename">Click&Go</h1>
-      </a>
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="#hero" class="active">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#portfolio">Portfolio</a></li>
-          <li><a href="sponsors.html">Sponsors</a></li>
-          <li><a href="#team">Team</a></li>
-          <li><a href="#contact">Contact</a></li>
-          <a href="logout.php" class="btn btn-danger text-white">Logout</a>
-
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
+  <header class="bg-white shadow-sm py-3 mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+      <h1 class="h4 mb-0">Mon Compte</h1>
+      <a href="?logout=true" class="btn btn-outline-danger">Déconnexion</a>
     </div>
   </header>
 
-  <main class="main">
-    <section class="section">
-      <div class="container mt-5">
-        <h5 class="fw-semibold mb-4">Modifier mes info</h5>
-        <div class="card">
-          <div class="card-body">
-            <form action="" id="formr" method="post">
-              <div class="mb-3">
-                <label class="form-label">Nom :</label>
-                <input type="text" class="form-control" value="<?= $user['nom'] ?>" id="nom" name="nom">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Prenom :</label>
-                <input type="text" class="form-control" value="<?= $user['prenom'] ?>" id="prenom" name="prenom">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Age :</label>
-                <input min=8 max=90 type="number" value="<?= $user['age'] ?>" class="form-control" id="age" name="age">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Email address</label>
-                <input type="email" value="<?= $user['email'] ?>" class="form-control" id="email" name="email">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" id="password">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Type :</label>
-                <select name="type" class="form-control" id="typeinput">
-                  <option value="admin">admin</option>
-                  <option value="client">client</option>
-                </select>
-              </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-          </div>
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card p-4">
+          <h5 class="card-title mb-4 text-center">Modifier mes informations</h5>
+          <?php if ($error): ?>
+            <div class="alert alert-danger"><?= $error ?></div>
+          <?php endif; ?>
+          <form method="post">
+            <div class="mb-3 form-group">
+              <label for="nom" class="form-label">Nom</label>
+              <i class="bi bi-person form-icon"></i>
+              <input type="text" class="form-control" id="nom" name="nom" value="<?= htmlspecialchars($user['nom']) ?>" required>
+            </div>
+            <div class="mb-3 form-group">
+              <label for="prenom" class="form-label">Prénom</label>
+              <i class="bi bi-person form-icon"></i>
+              <input type="text" class="form-control" id="prenom" name="prenom" value="<?= htmlspecialchars($user['prenom']) ?>" required>
+            </div>
+            <div class="mb-3 form-group">
+              <label for="age" class="form-label">Âge</label>
+              <i class="bi bi-calendar form-icon"></i>
+              <input type="number" class="form-control" id="age" name="age" min="8" max="90" value="<?= htmlspecialchars($user['age']) ?>" required>
+            </div>
+            <div class="mb-3 form-group">
+              <label for="email" class="form-label">Adresse e-mail</label>
+              <i class="bi bi-envelope form-icon"></i>
+              <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
+            </div>
+            <div class="mb-3 form-group">
+              <label for="password" class="form-label">Mot de passe</label>
+              <i class="bi bi-lock form-icon"></i>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-4 form-group">
+              <label for="typeinput" class="form-label">Type</label>
+              <i class="bi bi-person-badge form-icon"></i>
+              <select name="type" class="form-control" id="typeinput" required>
+                <option value="admin" <?= $user['type'] === 'admin' ? 'selected' : '' ?>>Admin</option>
+                <option value="client" <?= $user['type'] === 'client' ? 'selected' : '' ?>>Client</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
+          </form>
         </div>
       </div>
-    </section>
+    </div>
   </main>
 
-  <footer class="footer mt-5 py-4 bg-light text-center">
-    <div class="container">
-      <p>&copy; 2025 Click&Go. All rights reserved.</p>
-    </div>
+  <footer class="text-center py-4 mt-5">
+    <p class="mb-0">&copy; 2025 MyApp. Tous droits réservés.</p>
   </footer>
 
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

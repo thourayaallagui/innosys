@@ -3,8 +3,6 @@ session_start();
 include('../../config.php');
 include('../../controller/userC.php');
 
-$error = '';
-
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
@@ -13,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $password = $_POST['password'];
     $type = 'client';
 
-    if (!empty($nom) && !empty($prenom) && !empty($age) && !empty($email) && !empty($password)) {
+    if (!empty($nom) && !empty($prenom) && !empty($age) && !empty($email) && !empty($password) && !empty($type)) {
         $user = new User($nom, $prenom, $email, $password, $age, $type);
         $userC = new userC();
         $userC->create($user);
@@ -27,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 <!doctype html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,80 +34,53 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom, #87CEEB, #FFFFFF);
+            background: linear-gradient(to bottom right, #a1c4fd, #c2e9fb); /* Dégradé bleu ciel */
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
-        }
-
-        .wave {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%2361dafb" fill-opacity="1" d="M0,128L30,144C60,160,120,192,180,202.7C240,213,300,203,360,181.3C420,160,480,128,540,117.3C600,107,660,117,720,128C780,139,840,149,900,170.7C960,192,1020,224,1080,245.3C1140,267,1200,277,1260,250.7C1320,224,1380,160,1410,128L1440,96L1440,0L1410,0C1380,0,1320,0,1260,0C1200,0,1140,0,1080,0C1020,0,960,0,900,0C840,0,780,0,720,0C660,0,600,0,540,0C480,0,420,0,360,0C300,0,240,0,180,0C120,0,60,0,30,0L0,0Z"></path></svg>') no-repeat center bottom;
-            background-size: cover;
+            font-family: Arial, sans-serif;
         }
 
         .login-box {
-            background: rgba(255, 255, 255, 0.9);
+            background: white;
             padding: 40px;
-            border-radius: 12px;
-            width: 350px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            z-index: 1;
         }
 
         .login-box .icon {
-            font-size: 50px;
+            font-size: 40px;
             color: #6a1b9a;
             margin-bottom: 20px;
         }
 
         .login-box input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             margin: 10px 0;
             border-radius: 8px;
-            border: 2px solid #6a1b9a;
+            border: 2px solid black;
             outline: none;
             font-size: 16px;
-            transition: border 0.3s;
-        }
-
-        .login-box input:focus {
-            border-color: #3f51b5;
         }
 
         .login-box button {
             width: 100%;
-            padding: 12px;
-            background: #6a1b9a;
+            padding: 10px;
+            background: black;
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
             margin-top: 10px;
-            transition: background 0.3s;
         }
 
         .login-box button:hover {
-            background: #3f51b5;
-        }
-
-        .login-box a {
-            display: inline-block;
-            margin-top: 10px;
-            color: #6a1b9a;
-            font-size: 14px;
-            text-decoration: none;
+            background: #333;
         }
 
         .error {
@@ -129,23 +101,34 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         .valid {
             color: green;
         }
+
+        .login-box a {
+            display: block;
+            margin-top: 10px;
+            color: #6a1b9a;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .login-box a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
 <body>
-    <div class="wave"></div>
     <div class="login-box">
         <div class="icon">👤</div>
-        <?php if (!empty($error)): ?>
+        <?php if (isset($error)): ?>
             <div class="error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
-        <form method="post">
-            <input type="text" name="nom" id="nom" placeholder="Nom" />
-            <input type="text" name="prenom" id="prenom" placeholder="Prenom" />
-            <input type="text" name="age" id="age" placeholder="Âge" />
-            <input type="text" name="email" id="email" placeholder="Email" />
-            <input type="password" name="password" id="password" placeholder="Mot de passe" />
-            
+        <form method="post" id="formr">
+            <input type="text" name="nom" placeholder="Nom" required />
+            <input type="text" name="prenom" placeholder="Prenom" required />
+            <input type="number" name="age" placeholder="Âge" required />
+            <input type="email" name="email" placeholder="Email" required />
+            <input type="password" name="password" id="password" placeholder="Mot de passe" required />
+
             <div id="password-rules">
                 <p id="rule-length" class="invalid">🔴 8 caractères minimum</p>
                 <p id="rule-uppercase" class="invalid">🔴 Une majuscule</p>
@@ -161,8 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <script>
         const passwordInput = document.getElementById('password');
         const ruleLength = document.getElementById('rule-length');
-        const ruleUpper = document.getElementById('rule-uppercase');
-        const ruleLower = document.getElementById('rule-lowercase');
+        const ruleUppercase = document.getElementById('rule-uppercase');
+        const ruleLowercase = document.getElementById('rule-lowercase');
         const ruleNumber = document.getElementById('rule-number');
 
         passwordInput.addEventListener('input', function () {
@@ -172,44 +155,61 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (value.length >= 8) {
                 ruleLength.classList.remove('invalid');
                 ruleLength.classList.add('valid');
-                ruleLength.textContent = '🟢 8 caractères minimum';
+                ruleLength.innerHTML = '🟢 8 caractères minimum';
             } else {
                 ruleLength.classList.remove('valid');
                 ruleLength.classList.add('invalid');
-                ruleLength.textContent = '🔴 8 caractères minimum';
+                ruleLength.innerHTML = '🔴 8 caractères minimum';
             }
 
             // Majuscule
             if (/[A-Z]/.test(value)) {
-                ruleUpper.classList.remove('invalid');
-                ruleUpper.classList.add('valid');
-                ruleUpper.textContent = '🟢 Une majuscule';
+                ruleUppercase.classList.remove('invalid');
+                ruleUppercase.classList.add('valid');
+                ruleUppercase.innerHTML = '🟢 Une majuscule';
             } else {
-                ruleUpper.classList.remove('valid');
-                ruleUpper.classList.add('invalid');
-                ruleUpper.textContent = '🔴 Une majuscule';
+                ruleUppercase.classList.remove('valid');
+                ruleUppercase.classList.add('invalid');
+                ruleUppercase.innerHTML = '🔴 Une majuscule';
             }
 
             // Minuscule
             if (/[a-z]/.test(value)) {
-                ruleLower.classList.remove('invalid');
-                ruleLower.classList.add('valid');
-                ruleLower.textContent = '🟢 Une minuscule';
+                ruleLowercase.classList.remove('invalid');
+                ruleLowercase.classList.add('valid');
+                ruleLowercase.innerHTML = '🟢 Une minuscule';
             } else {
-                ruleLower.classList.remove('valid');
-                ruleLower.classList.add('invalid');
-                ruleLower.textContent = '🔴 Une minuscule';
+                ruleLowercase.classList.remove('valid');
+                ruleLowercase.classList.add('invalid');
+                ruleLowercase.innerHTML = '🔴 Une minuscule';
             }
 
             // Chiffre
-            if (/[0-9]/.test(value)) {
+            if (/\d/.test(value)) {
                 ruleNumber.classList.remove('invalid');
                 ruleNumber.classList.add('valid');
-                ruleNumber.textContent = '🟢 Un chiffre';
+                ruleNumber.innerHTML = '🟢 Un chiffre';
             } else {
                 ruleNumber.classList.remove('valid');
                 ruleNumber.classList.add('invalid');
-                ruleNumber.textContent = '🔴 Un chiffre';
+                ruleNumber.innerHTML = '🔴 Un chiffre';
+            }
+        });
+
+        let myform = document.getElementById('formr');
+        myform.addEventListener('submit', function(e) {
+            const rules = document.querySelectorAll('#password-rules p');
+            let valid = true;
+
+            // Vérification si toutes les règles sont respectées
+            rules.forEach(rule => {
+                if (rule.classList.contains('invalid')) {
+                    valid = false;
+                }
+            });
+
+            if (!valid) {
+                e.preventDefault(); // Empêcher la soumission si les règles ne sont pas respectées
             }
         });
     </script>
